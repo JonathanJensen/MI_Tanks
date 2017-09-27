@@ -1,1 +1,1 @@
-MI_AutoUpdateTable
+MapInfo Pro Multiplayer tank game
