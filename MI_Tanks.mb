@@ -1,0 +1,100 @@
+'*****************************************************************************
+'       Copyright © 2015 Pitney Bowes Software Inc.
+'       All rights reserved.
+'****************************************************************************/
+
+Include "C:\Program Files\MapInfo\MapBasic\Samples\MAPBASIC\INC\mapbasic.def"
+Include "C:\Program Files\MapInfo\MapBasic\Samples\MAPBASIC\INC\IMapInfoPro.def"
+
+' Declare a method from the System.Windows.Forms.dll assembly
+Declare Method Show Class "System.Windows.Forms.MessageBox" Lib "System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" (ByVal str As String, ByVal caption As String) 
+
+' Declare methods from our own assembly
+Declare Method New_RibbonCustomizationAddIn Class "MI_Tanks.MI_TanksAddIn" Lib "MI_Tanks.dll" Alias Ctor_CreateInstance() as This
+Declare Method Initialize Class "MI_Tanks.MI_TanksAddIn" Lib "MI_Tanks.dll" Alias Initialize(ByVal p1 as This, ByVal p2 as refptr, ByVal p3 as String)
+Declare Method Unload Class "MI_Tanks.MI_TanksAddIn" Lib "MI_Tanks.dll" Alias Unload(ByVal p1 as This)
+
+' Declare method from Pro assembly 
+' see IMapInfoPro.def for all defines
+
+Declare Sub CustomHandler(ByVal p1 as String)
+Declare Sub PrintCustomMessage
+Declare Sub HelpExecuted(ByVal p1 as RefPtr)
+Declare Sub AddInLoadedHandler
+Declare Sub WinFocusChangedHandler
+Declare Sub EndHandler 
+Declare Sub Main
+
+Declare Sub AddIn_About
+Declare Sub AddIn_Help
+Declare Sub AddIn_DefaultCommand
+Declare Function AddIn_Name() As String 
+Declare Function AddIn_Description() As String 
+Declare Function AddIn_ImageUri() As String 
+Declare Function AddIn_Version () As String
+
+
+Global mapinfoApplication as This
+Global mbAddIn as This
+Global MessageTitle as string
+
+Sub Main
+	if (SystemInfo(SYS_INFO_MIPLATFORM) = MIPLATFORM_WIN64) And (SystemInfo(SYS_INFO_MAPINFO_INTERFACE) = MIINTERFACE_RIBBON) then
+		print "x64"
+	else
+		Note "This sample can only work with 64-bit Ribbon Interface UX."
+		Terminate application ApplicationName$()
+	end if
+	
+	mapinfoApplication = SYSTEMINFO(SYS_INFO_IMAPINFOAPPLICATION)
+	mbAddIn = New_RibbonCustomizationAddIn()
+	call Initialize(mbAddIn, mapinfoApplication, ApplicationName$() )
+End Sub 
+
+Sub WinFocusChangedHandler 
+End Sub WinFocusChangedHandler 
+
+Sub CustomHandler(ByVal p1 as string)
+	Call Show(p1, MessageTitle)
+End Sub
+
+Sub PrintCustomMessage()
+	Print "This is a demo of how you can call a Mapbasic function without parameters directly from C# code."
+End Sub
+
+Sub HelpExecuted(ByVal p1 as RefPtr)
+	print "In MapBasic HelpExecuted"
+End Sub
+
+Sub AddInLoadedHandler
+	print "Addin Loaded"
+End Sub
+
+Sub EndHandler
+	call Unload(mbAddIn)
+End Sub 
+
+Function AddIn_Name() As String
+ AddIn_Name = "Auto Refresher AddIn"
+End Function
+
+Function AddIn_Version() As String
+ AddIn_Version = "1.0"
+End Function
+
+Sub AddIn_About
+	Note "This is my about box"
+End Sub
+
+Sub AddIn_Help
+	Note "This is my Help"
+End Sub
+
+Sub AddIn_DefaultCommand
+	Note "This is my Default Command"
+End Sub
+
+Function AddIn_ImageUri() As String
+ AddIn_ImageUri = "pack://application:,,,/MapInfo.StyleResources;component/Images/Table/newTable_16x16.png"
+End Function
+

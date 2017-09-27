@@ -1,0 +1,46 @@
+!Workspace
+!Version 1050
+!Charset WindowsLatin1
+Open Table "BYGNING" As BYGNING Interactive
+Open Table "BingAerial" As BingAerial Interactive
+Open Table "tanks" As tanks Interactive
+Select *  from tanks  where ID = 0  
+Map From tanks,BYGNING,BingAerial
+  Position (0.0833333,1.59375) Units "in"
+  Width 9.96875 Units "in" Height 4.5625 Units "in" 
+Set Window FrontWindow() ScrollBars Off Autoscroll On Enhanced On Smooth Text Antialias Image High
+Set Map
+  CoordSys Earth Projection 10, 157, "m", 0
+  Center (1107027.876,7768472.97)
+  Zoom 0.2817142799 Units "km"
+  Preserve Zoom Display Zoom
+  Distance Units "km" Area Units "sq km" XY Units "m"
+Set Map
+  Layer 1
+    Display Graphic
+    Global Pen (1,2,0) Brush (2,16777215,16777215) Symbol (35,0,12) Line (1,2,0) Font ("Arial",0,9,0)
+    Label Line Arrow Position Center Font ("Arial",0,9,0) Pen (1,2,0) 
+      With PLAYERNAME
+      Parallel On Auto Off Overlap On Duplicates On Offset 2
+      Visibility On
+  Layer 2
+    Display Global
+    Global Pen (2,2,0) Brush (2,8421504,16777215) Symbol (35,0,12) Line (1,2,0) Font ("Arial",0,9,0)
+    Label Line None Position Center Font ("Arial",0,9,0) Pen (1,2,0) 
+      With FEAT_TYPE
+      Parallel On Auto Off Overlap Off Duplicates On Offset 2
+      Visibility On
+  Layer 3
+    Display Graphic
+    Global Pen (1,2,0)  Brush (2,16777215,16777215)  Symbol (35,0,12)  Line (1,2,0)  Font ("Arial",0,9,0)
+    Selectable Off
+  contrast 50 
+  brightness 50 
+  alpha 255 
+    transparency off 
+  color 0 
+    grayscale off 
+Set Map Layer 1 Editable
+Set Window FrontWindow() Printer
+ Name "HP Color LaserJet CP4025/4525 PCL6 Class Driver" Orientation Portrait Copies 1
+ Papersize 9

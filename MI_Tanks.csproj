@@ -1,0 +1,108 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <UsingTask TaskName="MapBasicBuild.CompileMb" AssemblyFile="..\MapBasicBuildTask\MapBasicBuildTasks.dll" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{E5EE0D40-1922-45C0-A3DA-BE5BD5C5DF65}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>MI_Tanks</RootNamespace>
+    <AssemblyName>MI_Tanks</AssemblyName>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <MapBasicExePath>..\..\..\..\CORE\x64\$(Configuration)\MI\Mapbasic.exe</MapBasicExePath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="MapInfo.Application">
+      <HintPath>..\..\Program Files\MapInfo\Professional\MapInfo.Application.dll</HintPath>
+    </Reference>
+    <Reference Include="MapInfo.Constants">
+      <HintPath>..\..\Program Files\MapInfo\Professional\MapInfo.Constants.dll</HintPath>
+    </Reference>
+    <Reference Include="MapInfo.Controls">
+      <HintPath>..\..\Program Files\MapInfo\Professional\MapInfo.Controls.dll</HintPath>
+    </Reference>
+    <Reference Include="MapInfo.StyleResources">
+      <HintPath>..\..\Program Files\MapInfo\Professional\MapInfo.StyleResources.dll</HintPath>
+    </Reference>
+    <Reference Include="MapInfo.Types">
+      <Private>False</Private>
+      <HintPath>C:\Program Files\MapInfo\Professional\MapInfo.Types.dll</HintPath>
+    </Reference>
+    <Reference Include="miadm">
+      <Private>False</Private>
+      <HintPath>C:\Program Files\MapInfo\Professional\miadm.dll</HintPath>
+    </Reference>
+    <Reference Include="mibase">
+      <HintPath>..\..\Program Files\MapInfo\Professional\mibase.dll</HintPath>
+    </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="System" />
+    <Reference Include="System.AddIn" />
+    <Reference Include="System.AddIn.Contract" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Windows.Presentation" />
+    <Reference Include="System.Xaml" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="DelegateCommand.cs" />
+    <Compile Include="MI_TanksAddIn.cs" />
+    <Compile Include="IMI_TanksAddIn.cs" />
+    <Compile Include="MainForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MainForm.designer.cs">
+      <DependentUpon>MainForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UsernameForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UsernameForm.Designer.cs">
+      <DependentUpon>UsernameForm.cs</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="MI_Tanks.mb" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="MainForm.resx">
+      <DependentUpon>MainForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UsernameForm.resx">
+      <DependentUpon>UsernameForm.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Target Name="BuildMapBasic" AfterTargets="Build" Inputs="@(CustomBuild)" Outputs="@(CustomBuild->'$(OutDir)\%(Filename).mbx')">
+    <MapBasicBuild.CompileMb SourceFiles="@(CustomBuild->'%(FullPath)')" MapBasicExe="$(MapBasicExePath)" OutputFolder="$(OutDir)" IntermediateFolder="$(IntDir)" />
+  </Target>
+</Project>
