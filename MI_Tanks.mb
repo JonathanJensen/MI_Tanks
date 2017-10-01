@@ -49,6 +49,7 @@ Sub Main
 	mapinfoApplication = SYSTEMINFO(SYS_INFO_IMAPINFOAPPLICATION)
 	mbAddIn = New_RibbonCustomizationAddIn()
 	call Initialize(mbAddIn, mapinfoApplication, ApplicationName$() )
+	Run Application "C:\source\MI_Tanks\MapInfo_Files\MI_Tanks.WOR"
 End Sub 
 
 Sub WinFocusChangedHandler 
@@ -97,4 +98,3 @@ End Sub
 Function AddIn_ImageUri() As String
  AddIn_ImageUri = "pack://application:,,,/MapInfo.StyleResources;component/Images/Table/newTable_16x16.png"
 End Function
-

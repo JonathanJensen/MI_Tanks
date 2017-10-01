@@ -1,0 +1,906 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>MapInfo.Application</name>
+    </assembly>
+    <members>
+        <member name="T:MapInfo.Application.IIntegratedMappingApplication">
+            <summary>
+            Interface required to be implemented by all integrated mapping applications to manage windows.
+            </summary>
+            <remarks>For Wpf based application, the main Window class could implement this interface and for
+            WinForms based application, the main form class could implement this interface.
+            
+            See the two samples for Intergated mapping in SAMPLES\DOTNET\IntegratedMappingWpf and SAMPLES\DOTNET\IntegratedMappingWinForms to get started.
+            </remarks>
+        </member>
+        <member name="P:MapInfo.Application.IIntegratedMappingApplication.FrontDocumentWindow">
+            <summary>
+            Gets or Sets the front document window in application.
+            
+            <remarks>This is equivalent of the mapbasic frontwindow() function.</remarks>
+            </summary>
+            <remarks>Can be a window embedded in a layout.</remarks>
+        </member>
+        <member name="P:MapInfo.Application.IIntegratedMappingApplication.ActiveWindow">
+            <summary>
+            Gets or Sets the window that has the focus and keyboard focus.
+            </summary>
+            <remarks>Note that it can not be a window embedded in a layout, or reparented window.</remarks>
+        </member>
+        <member name="P:MapInfo.Application.IIntegratedMappingApplication.IsApplicationClosing">
+            <summary>
+            Gets if the application is in closing sequence.
+            </summary>
+            <remarks>Note that its value should be set correctly when the application is going to close.</remarks>
+        </member>
+        <member name="M:MapInfo.Application.IIntegratedMappingApplication.SetActiveWindow(MapInfo.Types.IWindowInfo,System.Boolean)">
+            <summary>
+            Activates the specified window, and make it <see cref="P:MapInfo.Application.IIntegratedMappingApplication.ActiveWindow"/>.
+            </summary>
+            <param name="win">window to set to Active</param>
+            <param name="internalUse">Flag indicates that the active window needs to be updated in core code.
+            <remarks>Pass true, if the active window is changed via some UI action in application, so that
+            active window can also be updated in core code.</remarks>
+            </param>
+        </member>
+        <member name="M:MapInfo.Application.IIntegratedMappingApplication.SetNextActiveWindow">
+            <summary>
+            Pick and activate the next active window if needed.
+            </summary>
+        </member>
+        <member name="M:MapInfo.Application.IIntegratedMappingApplication.WindowCreated(MapInfo.Types.IWindowInfo,System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.String,System.String}})">
+            <summary>
+            Called when a window is created.
+            </summary>
+            <param name="window">Window Info object of new window getting created.</param>
+            <param name="properties">properties for window.</param>
+        </member>
+        <member name="M:MapInfo.Application.IIntegratedMappingApplication.PreviewWindowClosed(MapInfo.Types.IWindowInfo)">
+            <summary>
+            Called before window is getting closed.
+            </summary>
+            <param name="window">Window Info object of window being closed.</param>
+        </member>
+        <member name="M:MapInfo.Application.IIntegratedMappingApplication.WindowClosed(MapInfo.Types.IWindowInfo)">
+            <summary>
+            Called when a window is being closed.
+            </summary>
+            <param name="window">Window Info object of window being closed.</param>
+        </member>
+        <member name="M:MapInfo.Application.IIntegratedMappingApplication.WindowShowing(MapInfo.Types.IWindowInfo,System.Boolean)">
+            <summary>
+            Called when a window is being shown or hidden
+            </summary>
+            <param name="window">Window Info object of window being shown/hidden.</param>
+            <param name="bShow">To show or hide window.</param>
+        </member>
+        <member name="M:MapInfo.Application.IIntegratedMappingApplication.ShowNotification(System.String,System.Windows.Point,System.Int32)">
+            <summary>
+            Display a notification at the specified screen location
+            </summary>
+            <param name="message">notification text</param>
+            <param name="location">screen point to display it achored at</param>
+            <param name="timeToShow">number of milliseconds to show</param>
+        </member>
+        <member name="M:MapInfo.Application.IIntegratedMappingApplication.SetApplicationTitle(System.String)">
+            <summary>
+            Called when set window MapInfo "new title" mapbasic statement is run.
+            </summary>
+            <param name="title">new title of main application</param>
+        </member>
+        <member name="M:MapInfo.Application.IIntegratedMappingApplication.SetApplicationIcon(System.Uri)">
+            <summary>
+            Called when to set the new application icon.
+            </summary>
+            <param name="icon">New icon URI path.</param>
+        </member>
+        <member name="M:MapInfo.Application.IIntegratedMappingApplication.SetWindowProperty(MapInfo.Types.IWindowInfo,MapInfo.Types.WindowProps,System.String)">
+            <summary>
+            Set the window property.
+            </summary>
+            <param name="win">Window info object of window whose property needs to be updated.</param>
+            <param name="property">Property to update. 
+            <remarks>Check <see cref="T:MapInfo.Types.WindowProps"/> for various properties.</remarks>
+            </param>
+            <param name="value">string based value of property.
+            <remarks>String based value should be appropriately converted to property type.</remarks>
+            </param>
+        </member>
+        <member name="M:MapInfo.Application.IIntegratedMappingApplication.GetWindowProperty``1(MapInfo.Types.IWindowInfo,MapInfo.Types.WindowProps)">
+            <summary>
+            Get the window property.
+            </summary>
+            <typeparam name="TReturnType"><see cref="T:System.Type"/>, in which the returned value of property is required.</typeparam>
+            <param name="win">Window info object of window whose property value is required.</param>
+            <param name="property">Property whose values is required. 
+            <remarks>Check <see cref="T:MapInfo.Types.WindowProps"/> for various properties.</remarks>
+            </param>
+            <returns>Returns the value of property for a window in given <see cref="T:System.Type"/>.</returns>
+        </member>
+        <member name="M:MapInfo.Application.IIntegratedMappingApplication.GetApplicationClientRect">
+            <summary>
+            Get the main application client rect.
+            </summary>
+            <returns>Client rect of the main window.</returns>
+        </member>
+        <member name="M:MapInfo.Application.MapInfoExtensibilityImpl.CreateButtonPad(System.UIntPtr,MapInfo.MiPro.ButtonPadParam)">
+            <summary>
+            Create a buttonpad(ribbon group) in legacy tab
+            </summary>
+        </member>
+        <member name="M:MapInfo.Application.MapInfoExtensibilityImpl.CreateDefaultButtonPad(System.String,System.Int32,System.Boolean)">
+            <summary>
+            Creates default definition of a button pad, this method is different in new ux.
+            The default definition of a button pad in new ux is empty so we clear out the button pad
+            specified.
+            </summary>
+        </member>
+        <member name="M:MapInfo.Application.MapInfoExtensibilityImpl.AlterButtonPadShow(System.String,System.Boolean)">
+            <summary>
+            Show/hide buttonpad.
+            </summary>
+        </member>
+        <member name="M:MapInfo.Application.MapInfoExtensibilityImpl.AlterButtonPadDestroy(System.String)">
+            <summary>
+            Removes a buttonpad from legacy tab.
+            </summary>
+        </member>
+        <member name="M:MapInfo.Application.MapInfoExtensibilityImpl.AlterButtonPadModify(System.String,System.String)">
+            <summary>
+            Modify the caption of a button pad.
+            </summary>
+        </member>
+        <member name="M:MapInfo.Application.MapInfoExtensibilityImpl.AlterButtonPadAdd(System.UIntPtr,System.String,MapInfo.MiPro.ButtonDefinition)">
+            <summary>
+            Add a control to a button pad.
+            </summary>
+        </member>
+        <member name="M:MapInfo.Application.MapInfoExtensibilityImpl.AlterButtonPadRemove(System.String,System.Int32)">
+            <summary>
+            Removes a control from button pad.
+            </summary>
+        </member>
+        <member name="M:MapInfo.Application.MapInfoExtensibilityImpl.CreateMenuBar(System.Collections.Generic.List{MapInfo.MiPro.ContextMenuStruct})">
+            <summary>
+            Create menu bar. 
+            Method creates a dropdown for each menu in menu group of legacy tab.
+            </summary>
+        </member>
+        <member name="M:MapInfo.Application.MapInfoExtensibilityImpl.CreateMenu(System.Int32,System.Int32,System.Collections.Generic.List{MapInfo.MiPro.ContextMenuStruct})">
+            <summary>
+            Creates a single menu.
+            </summary>
+        </member>
+        <member name="M:MapInfo.Application.MapInfoExtensibilityImpl.MenuBarCommand(System.Boolean)">
+            <summary>
+            Show/hides the menu group in legacy tab.
+            </summary>
+        </member>
+        <member name="M:MapInfo.Application.MapInfoExtensibilityImpl.AlterMenuAdd(System.Int32,System.Int32,MapInfo.MiPro.ContextMenuStruct)">
+            <summary>
+            Add a menuitems to menu.
+            </summary>
+        </member>
+        <member name="M:MapInfo.Application.MapInfoExtensibilityImpl.AlterMenuRemove(System.Int32,System.Int32,System.Int32)">
+            <summary>
+            remove a menu item from a menu.
+            </summary>
+        </member>
+        <member name="M:MapInfo.Application.MapInfoExtensibilityImpl.MenuItemInfo(System.Int32,MapInfo.MiPro.ContextMenuStruct@)">
+            <summary>
+            Get Info about an menu item
+            
+            MenuItemInfoById
+            </summary>
+        </member>
+        <member name="M:MapInfo.Application.MapInfoExtensibilityImpl.AlterMenuItemCaption(System.Int32,System.Boolean,System.String)">
+            <summary>
+            Change menu item caption.
+            </summary>
+        </member>
+        <member name="M:MapInfo.Application.MapInfoExtensibilityImpl.AlterMenuItemCommand(System.Int32,System.Boolean,System.String)">
+            <summary>
+            Update menu item command.
+            </summary>
+        </member>
+        <member name="M:MapInfo.Application.MapInfoExtensibilityImpl.ApplyIconToButtonPad(MapInfo.Types.IImageControl,MapInfo.MiPro.ButtonDefinition)">
+            <summary>
+            Apply the icon on button pad.
+            </summary>
+        </member>
+        <member name="T:MapInfo.Application.Imaging">
+            <exclude/>
+            <summary>
+            Class helps us to load icons from native c++ dll.
+            </summary>
+        </member>
+        <member name="M:MapInfo.Application.Imaging.LoadNativeBitmapAsImageSource(System.String,System.Int32)">
+            <summary>
+            Loads a native bmp or png source into a wpf Imagesource.
+            </summary>
+            <param name="libraryPath">Library path</param>
+            <param name="resourceId">resource id</param>
+            <returns>Image source</returns>
+        </member>
+        <member name="M:MapInfo.Application.Imaging.LoadIconFromCore(System.Int32,System.Boolean)">
+            <summary>
+            Loads the icon from bmp sprite from native resources.
+            </summary>
+            <param name="resourceId">mb old icon id</param>
+            <param name="isLarge">To load high resolution icon.</param>
+            <returns>ImageSource object</returns>
+        </member>
+        <member name="M:MapInfo.Application.Imaging.HBitmapToImageSource(System.IntPtr)">
+            <summary>
+            Creates a wpf compatible BitmapSource from native handle to bitmap.
+            </summary>
+        </member>
+        <member name="M:MapInfo.Application.Imaging.ByteToImage(System.Byte[])">
+            <summary>
+            Converts byte array to imagesource.
+            </summary>
+        </member>
+        <member name="M:MapInfo.Application.Imaging.CreateBitmapSourceFromBitmap(System.Drawing.Bitmap)">
+            <summary>
+            Creates a wpf BitmapSource from Bitmap.
+            
+            This method reads the bytes from bitmap and creates an in-memory png, which
+            then is converted to writablebitmap.
+            </summary>
+        </member>
+        <member name="M:MapInfo.Application.Imaging.CreateBitmapSourceFromBitmap(System.IO.Stream)">
+            <summary>
+            Create a writable bitmap from stream.
+            </summary>
+        </member>
+        <member name="T:MapInfo.Application.MapInfoPreferenceProperties">
+            <summary>
+            A collection of constants useful to Pro and other integrated mapping applications
+            </summary>
+            <exclude/>
+        </member>
+        <member name="P:MapInfo.Application.MapInfoPreferenceProperties.TabTrackingType">
+            <summary>
+            Track tab change by window or by window type
+            </summary>
+        </member>
+        <member name="P:MapInfo.Application.MapInfoPreferenceProperties.LoadRibbonStateOnStartup">
+            <summary>
+            Should ribbon and window state be loaded on startup
+            </summary>
+        </member>
+        <member name="P:MapInfo.Application.MapInfoPreferenceProperties.SaveRibbonStateOnExit">
+            <summary>
+            Should ribbon and window state be saved on exit
+            </summary>
+        </member>
+        <member name="P:MapInfo.Application.MapInfoPreferenceProperties.LoadDockingStateOnStartup">
+            <summary>
+            Should docking stae of tool windows be loaded on startup
+            </summary>
+        </member>
+        <member name="P:MapInfo.Application.MapInfoPreferenceProperties.SaveDockingStateOnExit">
+            <summary>
+            Should docking stae of tool windows be save on exit
+            </summary>
+        </member>
+        <member name="P:MapInfo.Application.MapInfoPreferenceProperties.ShowMaps">
+            <summary>
+            Show Maps in Workspace Explorer
+            </summary>
+        </member>
+        <member name="P:MapInfo.Application.MapInfoPreferenceProperties.ShowTables">
+            <summary>
+            Show Table List in Workspace Explorer
+            </summary>
+        </member>
+        <member name="P:MapInfo.Application.MapInfoPreferenceProperties.ShowWindows">
+            <summary>
+            Show Window List in Workspace Explorer
+            </summary>
+        </member>
+        <member name="P:MapInfo.Application.MapInfoPreferenceProperties.ShowConnections">
+            <summary>
+            Show Connection List in Workspace Explorer
+            </summary>
+        </member>
+        <member name="P:MapInfo.Application.MapInfoPreferenceProperties.RememberSectionHeights">
+            <summary>
+            Remember section hieghts in Workspace Explorer across sessions
+            </summary>
+        </member>
+        <member name="P:MapInfo.Application.MapInfoPreferenceProperties.ShowToolWindows">
+            <summary>
+            Show tool windows in Window List
+            </summary>
+        </member>
+        <member name="P:MapInfo.Application.MapInfoPreferenceProperties.MapBasicOldCtrlKeyBehavior">
+            <summary>
+            Use Old Ctrl Key behavior in mapbasic window
+            </summary>
+            <remarks>Enter executs command if true, Ctrl+Enter if false</remarks>
+        </member>
+        <member name="M:MapInfo.Application.MapInfoPreferenceProperties.FirePreferencesChanged">
+            <summary>
+            Call to indicate that preferences have changed
+            </summary>
+        </member>
+        <member name="T:MapInfo.Application.MenuItemTextToggler">
+            <exclude/>
+            <summary>
+            Converter for showing alternate menu item text
+            </summary>
+        </member>
+        <member name="M:MapInfo.Application.MenuItemTextToggler.Convert(System.Object,System.Type,System.Object,System.Globalization.CultureInfo)">
+            <summary>
+            Convert
+            </summary>
+            <param name="value"></param>
+            <param name="targetType"></param>
+            <param name="parameter"></param>
+            <param name="culture"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MapInfo.Application.MenuItemTextToggler.ConvertBack(System.Object,System.Type,System.Object,System.Globalization.CultureInfo)">
+            <summary>
+            ConvertBack
+            </summary>
+            <param name="value"></param>
+            <param name="targetType"></param>
+            <param name="parameter"></param>
+            <param name="culture"></param>
+            <returns></returns>
+        </member>
+        <member name="T:MapInfo.Application.MapInfoApplication">
+            <summary>
+            Layer providing an interface between core code and actual application
+            </summary>
+        </member>
+        <member name="M:MapInfo.Application.MapInfoApplication.AddCommands(System.Collections.Generic.IEnumerable{MapInfo.Commands.MapInfoCommand},System.Windows.Input.ExecutedRoutedEventHandler,System.Windows.Input.CanExecuteRoutedEventHandler,System.Windows.Input.CommandBindingCollection)">
+            <summary>
+            Helper function for adding a set of MapInfo Commands to the command bindings.
+            </summary>
+            <param name="commands">Set of MapInfo Commands to add</param>
+            <param name="exec"></param>
+            <param name="canExec"></param>
+            <param name="commandBindings"></param>
+        </member>
+        <member name="M:MapInfo.Application.MapInfoApplication.IsSystemEditCommand(MapInfo.Commands.MapBasicCommand)">
+            <summary>
+            Returns true if the specified command  is Cut, Copy, Paste, Undo, or Redo. 
+            </summary>
+            <param name="mbCommand">A MapBasicCommand</param>
+            <returns>true if mbCommand is not null and it represents Cut, Copy, Paste, Undo or Redo. </returns>
+        </member>
+        <member name="M:MapInfo.Application.MapInfoApplication.SetCurrentCustomTool(System.Int32)">
+            <summary>
+            Set a custom tool as the current tool
+            </summary>
+            <param name="toolId">id of the tool button.</param>
+        </member>
+        <member name="M:MapInfo.Application.MapInfoApplication.InvokeCommandById(System.Int32)">
+            <summary>
+            Invokes the command by identifier.
+            </summary>
+            <param name="id">command identifier.</param>
+        </member>
+        <member name="M:MapInfo.Application.MapInfoApplication.GetContextMenu(System.Int32)">
+            <summary>
+            Gets the context menu from the ID
+            </summary>
+            <param name="menuId">MenuID</param>
+            <returns>Contextmenu from the menuID</returns>
+        </member>
+        <member name="M:MapInfo.Application.MapInfoApplication.GetApplicationClientRect">
+            <summary>
+            Gets the Application client rect.
+            </summary>
+        </member>
+        <member name="M:MapInfo.Application.MapInfoApplication.NotifyMbApplicationTerminating(System.UIntPtr)">
+            <summary>
+            Called whenever a mb application is terminating.
+            </summary>
+        </member>
+        <member name="M:MapInfo.Application.MapInfoApplication.InvalidateRequery(System.Int32)">
+            <summary>
+            Requeries a command or all commands.
+            </summary>
+        </member>
+        <member name="M:MapInfo.Application.MapInfoApplication.SetDialogCenteredParent(System.Boolean)">
+            <summary>
+            This method will set the parent to which modal dialog needs to be centered.
+            </summary>
+            <param name="bSet">To set or revert</param>
+        </member>
+        <member name="T:MapInfo.Application.MapInfoCore">
+            <summary>
+            This class contains static methods for the Startup, Initialize and Shutdown of an Integrated Mappping Application
+            </summary>
+        </member>
+        <member name="P:MapInfo.Application.MapInfoCore.MapInfoTitleStringWithVersion">
+            <summary>
+            MapInfo Title String including version number
+            </summary>
+        </member>
+        <member name="M:MapInfo.Application.MapInfoCore.StartUp(System.String[])">
+            <summary>
+            Required call to Startup the MapInfo Application Engine
+            </summary>
+            <param name="cmdLine">MapInfo command line arguments needs to passed to core code.
+            <remarks>Check mapinfo user guide for valid command line arguments.</remarks>
+            </param>
+            <returns>true if application needs to be started visible, else false.</returns>
+        </member>
+        <member name="M:MapInfo.Application.MapInfoCore.IsRasterLicensed">
+            <summary>
+            Checks for valid raster license.
+            </summary>
+            <returns>true/false based on license status</returns>
+        </member>
+        <member name="M:MapInfo.Application.MapInfoCore.IsFeatureLicensed(System.String)">
+            <summary>
+            Check for valid feature license.
+            </summary>
+            <param name="featureName">Feature name</param>
+            <returns>true/false based on license status.</returns>
+        </member>
+        <member name="M:MapInfo.Application.MapInfoCore.ShutDown(System.Boolean,System.Boolean)">
+            <summary>
+            Call to Shutdown and clean up resources before exiting the application.
+            </summary>
+            <param name="interactive">Make the shutdown interactive or not.</param>
+            <param name="bExitAfterInit">Is the exit immediately after application init.
+            <remarks>flag is only for internal purpose.</remarks>
+            </param>
+            <returns>true if user has canceled the shutdown, else false.</returns>
+        </member>
+        <member name="M:MapInfo.Application.MapInfoCore.Initialize(System.Windows.Window,MapInfo.Application.IIntegratedMappingApplication)">
+            <summary>
+            Call to set your main application window into the MapInfo Application and get access to the interface to control MapInfo and listen to events.
+            </summary>
+            <param name="win"><see cref="T:System.Windows.Window"/> which should be set in core core.</param>
+            <param name="integratedMappingApplication">Object implementing <see cref="T:MapInfo.Application.IIntegratedMappingApplication"/> interface.</param>
+            <returns>Instance of MapInfo Application interface which can be used for listening to events.
+            <remarks>Check <see cref="T:MapInfo.Types.IMapInfoApplication"/> interface for more information.</remarks>
+            </returns>
+        </member>
+        <member name="M:MapInfo.Application.MapInfoCore.Initialize(System.IntPtr,MapInfo.Application.IIntegratedMappingApplication)">
+            <summary>
+            Call to set your main application form handle into the MapInfo Application and get access to the interface to control MapInfo and listen to events.
+            </summary>
+            <param name="winFormHandle">HWND of Windows Forms Main Window</param>
+            <param name="integratedMappingApplication">Object implementing <see cref="T:MapInfo.Application.IIntegratedMappingApplication"/> interface.</param>
+            <returns>Instance of MapInfo Application interface which can be used for listening to events.
+            <remarks>Check <see cref="T:MapInfo.Types.IMapInfoApplication"/> interface for more information.</remarks>
+            </returns>
+        </member>
+        <member name="M:MapInfo.Application.MapInfoCore.SetFrontDocumentWindow(MapInfo.Types.IWindowInfo)">
+            <summary>
+            Sets the window as front document window in core code.
+            
+            <remarks>Once the window is set as front document window then, frontwindow() mapbasic function would
+            return that same id.</remarks>
+            </summary>
+            <param name="wi">Window Info obejct of the window which needs to be set as front document window.
+            <remarks>If passed null then front docuemnt window is set to 0.</remarks>
+            </param>
+        </member>
+        <member name="M:MapInfo.Application.MapInfoCore.SetActiveWindow(MapInfo.Types.IWindowInfo)">
+            <summary>
+            Sets the window as active window in core code.
+            
+            <remarks>Active window is the window having the focus and keyboard focus.</remarks>
+            </summary>
+            <param name="wi">Window Info obejct of the window which needs to be set as active window.</param>
+        </member>
+        <member name="M:MapInfo.Application.MapInfoCore.SaveWindowSize(MapInfo.Types.IWindowInfo)">
+            <summary>
+            Force core code to reset cached client rect.
+            </summary>
+            <param name="wi">Window info object for which client rect needs to be reset.</param>
+        </member>
+        <member name="M:MapInfo.Application.MapInfoCore.SetNoActiveWindow">
+            <summary>
+            Inform core code that there are no more windows so no need to call SetNextFrontWindow
+            </summary>
+        </member>
+        <member name="M:MapInfo.Application.MapInfoCore.RunMapBasicCommand(System.String,System.Boolean,System.Boolean)">
+            <summary>
+            Execute an intepreted  mapbasic command
+            </summary>
+            <param name="command">the command to run</param>
+            <param name="echo">Echo command to mapbasic window or not</param>
+            <param name="reportErrors">If true then mapbasic errors will be reported else error will be thrown as exception.</param>
+            <remarks><para>This is same as the old "Do" method in COM and .net api.</para></remarks>
+        </member>
+        <member name="M:MapInfo.Application.MapInfoCore.EvalMapBasicCommand(System.String,System.Boolean)">
+            <summary>
+            Execute an interpreted mapbasic function
+            </summary>
+            <param name="command">the command to run</param>
+            <param name="reportErrors">If true then mapbasic errors will be reported else error will be thrown as exception.</param>
+            <remarks><para>This is same as the old "Eval" method in COM and .net api.</para>
+            Any return value from the command will be converted to a string representation.</remarks>
+        </member>
+        <member name="M:MapInfo.Application.MapInfoCore.QueryQuit">
+            <summary>
+            Call to see if ok to exit app and prompt to save any changes
+            </summary>
+            <returns>true if ok to exit</returns>
+        </member>
+        <member name="M:MapInfo.Application.MapInfoCore.GetLicenseInformation">
+            <summary>
+            This will return an populated instance of an MiLicense.
+            This object contains information about the license 
+            associated with the current install of mapinfo.
+            </summary>
+            <returns>MiLicense</returns>
+        </member>
+        <member name="M:MapInfo.Application.MapInfoCore.GetVersionDisplayString">
+            <summary>
+            This will return the version string to be displayed from the 
+            core code. This is the same which is shown in the splash screen.
+            </summary>
+            <returns>string</returns>
+        </member>
+        <member name="T:MapInfo.Application.Properties.Resources">
+            <summary>
+              A strongly-typed resource class, for looking up localized strings, etc.
+            </summary>
+        </member>
+        <member name="P:MapInfo.Application.Properties.Resources.ResourceManager">
+            <summary>
+              Returns the cached ResourceManager instance used by this class.
+            </summary>
+        </member>
+        <member name="P:MapInfo.Application.Properties.Resources.Culture">
+            <summary>
+              Overrides the current thread's CurrentUICulture property for all
+              resource lookups using this strongly typed resource class.
+            </summary>
+        </member>
+        <member name="P:MapInfo.Application.Properties.Resources.ButtonPad_Dbms_Caption">
+            <summary>
+              Looks up a localized string similar to DBMS.
+            </summary>
+        </member>
+        <member name="P:MapInfo.Application.Properties.Resources.ButtonPad_Drawing_Caption">
+            <summary>
+              Looks up a localized string similar to Drawing.
+            </summary>
+        </member>
+        <member name="P:MapInfo.Application.Properties.Resources.ButtonPad_Main_Caption">
+            <summary>
+              Looks up a localized string similar to Main.
+            </summary>
+        </member>
+        <member name="P:MapInfo.Application.Properties.Resources.ButtonPad_Reserved_Caption">
+            <summary>
+              Looks up a localized string similar to Reserved.
+            </summary>
+        </member>
+        <member name="P:MapInfo.Application.Properties.Resources.ButtonPad_Standard_Caption">
+            <summary>
+              Looks up a localized string similar to Standard.
+            </summary>
+        </member>
+        <member name="P:MapInfo.Application.Properties.Resources.ButtonPad_Tools_Caption">
+            <summary>
+              Looks up a localized string similar to Tools.
+            </summary>
+        </member>
+        <member name="P:MapInfo.Application.Properties.Resources.ButtonPad_WebServices_Caption">
+            <summary>
+              Looks up a localized string similar to Web Services.
+            </summary>
+        </member>
+        <member name="P:MapInfo.Application.Properties.Resources.ContextMenus_MenuItem_MaxHeight">
+            <summary>
+              Looks up a localized resource of type System.Int32 similar to 25.
+            </summary>
+        </member>
+        <member name="P:MapInfo.Application.Properties.Resources.Error_ContextMenu_InitFailed">
+            <summary>
+              Looks up a localized string similar to Context menus initialization failed : {0}.
+            </summary>
+        </member>
+        <member name="P:MapInfo.Application.Properties.Resources.Legacy_Tab_MenuGroup_KeyTip">
+            <summary>
+              Looks up a localized string similar to MG.
+            </summary>
+        </member>
+        <member name="P:MapInfo.Application.Properties.Resources.MapInfoApplication_Task_Completed">
+            <summary>
+              Looks up a localized string similar to &apos;{0}&apos; Task Completed.
+            </summary>
+        </member>
+        <member name="P:MapInfo.Application.Properties.Resources.Menu_Browse_Caption">
+            <summary>
+              Looks up a localized string similar to Browse.
+            </summary>
+        </member>
+        <member name="P:MapInfo.Application.Properties.Resources.Menu_Edit_Caption">
+            <summary>
+              Looks up a localized string similar to Edit.
+            </summary>
+        </member>
+        <member name="P:MapInfo.Application.Properties.Resources.Menu_File_Caption">
+            <summary>
+              Looks up a localized string similar to File.
+            </summary>
+        </member>
+        <member name="P:MapInfo.Application.Properties.Resources.Menu_FindSelection_Caption">
+            <summary>
+              Looks up a localized string similar to Find Selection.
+            </summary>
+        </member>
+        <member name="P:MapInfo.Application.Properties.Resources.Menu_Graph_Caption">
+            <summary>
+              Looks up a localized string similar to Graph.
+            </summary>
+        </member>
+        <member name="P:MapInfo.Application.Properties.Resources.Menu_Help_Caption">
+            <summary>
+              Looks up a localized string similar to Help.
+            </summary>
+        </member>
+        <member name="P:MapInfo.Application.Properties.Resources.Menu_Layout_Caption">
+            <summary>
+              Looks up a localized string similar to Layout.
+            </summary>
+        </member>
+        <member name="P:MapInfo.Application.Properties.Resources.Menu_LayoutDesginer_Caption">
+            <summary>
+              Looks up a localized string similar to Layout Designer.
+            </summary>
+        </member>
+        <member name="P:MapInfo.Application.Properties.Resources.Menu_LegendDesigner_Caption">
+            <summary>
+              Looks up a localized string similar to Legend Designer.
+            </summary>
+        </member>
+        <member name="P:MapInfo.Application.Properties.Resources.Menu_Licensing_Caption">
+            <summary>
+              Looks up a localized string similar to Licensing.
+            </summary>
+        </member>
+        <member name="P:MapInfo.Application.Properties.Resources.Menu_Maintenance_Caption">
+            <summary>
+              Looks up a localized string similar to Maintenance.
+            </summary>
+        </member>
+        <member name="P:MapInfo.Application.Properties.Resources.Menu_Map_Caption">
+            <summary>
+              Looks up a localized string similar to Map.
+            </summary>
+        </member>
+        <member name="P:MapInfo.Application.Properties.Resources.Menu_MapBasic_Caption">
+            <summary>
+              Looks up a localized string similar to MapBasic.
+            </summary>
+        </member>
+        <member name="P:MapInfo.Application.Properties.Resources.Menu_Objects_Caption">
+            <summary>
+              Looks up a localized string similar to Objects.
+            </summary>
+        </member>
+        <member name="P:MapInfo.Application.Properties.Resources.Menu_OpenWebService_Caption">
+            <summary>
+              Looks up a localized string similar to Open Web Service.
+            </summary>
+        </member>
+        <member name="P:MapInfo.Application.Properties.Resources.Menu_Options_Caption">
+            <summary>
+              Looks up a localized string similar to Options.
+            </summary>
+        </member>
+        <member name="P:MapInfo.Application.Properties.Resources.Menu_OracleWor_Caption">
+            <summary>
+              Looks up a localized string similar to Oracle Workspace Tools.
+            </summary>
+        </member>
+        <member name="P:MapInfo.Application.Properties.Resources.Menu_Query_Caption">
+            <summary>
+              Looks up a localized string similar to Query.
+            </summary>
+        </member>
+        <member name="P:MapInfo.Application.Properties.Resources.Menu_Raster_Caption">
+            <summary>
+              Looks up a localized string similar to Raster.
+            </summary>
+        </member>
+        <member name="P:MapInfo.Application.Properties.Resources.Menu_Redistrict_Caption">
+            <summary>
+              Looks up a localized string similar to Redistrict.
+            </summary>
+        </member>
+        <member name="P:MapInfo.Application.Properties.Resources.Menu_Search_Caption">
+            <summary>
+              Looks up a localized string similar to Search.
+            </summary>
+        </member>
+        <member name="P:MapInfo.Application.Properties.Resources.Menu_Table_Caption">
+            <summary>
+              Looks up a localized string similar to Table.
+            </summary>
+        </member>
+        <member name="P:MapInfo.Application.Properties.Resources.Menu_TileServer_Caption">
+            <summary>
+              Looks up a localized string similar to Tile Server Maps.
+            </summary>
+        </member>
+        <member name="P:MapInfo.Application.Properties.Resources.Menu_Tools_Caption">
+            <summary>
+              Looks up a localized string similar to Tools.
+            </summary>
+        </member>
+        <member name="P:MapInfo.Application.Properties.Resources.Menu_Window_Caption">
+            <summary>
+              Looks up a localized string similar to Window.
+            </summary>
+        </member>
+        <member name="P:MapInfo.Application.Properties.Resources.MenuBar_Caption">
+            <summary>
+              Looks up a localized string similar to Menu.
+            </summary>
+        </member>
+        <member name="P:MapInfo.Application.Properties.Resources.Ribbon_Legacy_Tab_Caption">
+            <summary>
+              Looks up a localized string similar to LEGACY.
+            </summary>
+        </member>
+        <member name="P:MapInfo.Application.Properties.Resources.Ribbon_Legacy_Tab_KeyTip">
+            <summary>
+              Looks up a localized string similar to G.
+            </summary>
+        </member>
+        <member name="P:MapInfo.Application.Properties.Resources.RibbonStatusBar_EditLayerField_MaxWidth">
+            <summary>
+              Looks up a localized string similar to 200.
+            </summary>
+        </member>
+        <member name="P:MapInfo.Application.Properties.Resources.RibbonStatusBar_EditLayerField_MinWidth">
+            <summary>
+              Looks up a localized string similar to 180.
+            </summary>
+        </member>
+        <member name="P:MapInfo.Application.Properties.Resources.RibbonStatusBar_MapperField_MaxWidth">
+            <summary>
+              Looks up a localized string similar to 200.
+            </summary>
+        </member>
+        <member name="P:MapInfo.Application.Properties.Resources.RibbonStatusBar_MapperField_MinWidth">
+            <summary>
+              Looks up a localized string similar to 180.
+            </summary>
+        </member>
+        <member name="P:MapInfo.Application.Properties.Resources.RibbonStatusBar_ProjectionField_MaxWidth">
+            <summary>
+              Looks up a localized string similar to 200.
+            </summary>
+        </member>
+        <member name="P:MapInfo.Application.Properties.Resources.RibbonStatusBar_ProjectionField_MinWidth">
+            <summary>
+              Looks up a localized string similar to 180.
+            </summary>
+        </member>
+        <member name="P:MapInfo.Application.Properties.Resources.RibbonStatusBar_SelectedField_MaxWidth">
+            <summary>
+              Looks up a localized string similar to 200.
+            </summary>
+        </member>
+        <member name="P:MapInfo.Application.Properties.Resources.RibbonStatusBar_SelectedField_MinWidth">
+            <summary>
+              Looks up a localized string similar to 150.
+            </summary>
+        </member>
+        <member name="P:MapInfo.Application.Properties.Resources.StatusBarLayerPopup_NoneEditableLayer_Label">
+            <summary>
+              Looks up a localized string similar to None.
+            </summary>
+        </member>
+        <member name="P:MapInfo.Application.Properties.Resources.UnNamed_Wor_Name">
+            <summary>
+              Looks up a localized string similar to Untitled.wor.
+            </summary>
+        </member>
+        <member name="P:MapInfo.Application.Properties.Resources.XvtHwndHost_WindowCreationFailed_Error">
+            <summary>
+              Looks up a localized string similar to Window Creation Failed.
+            </summary>
+        </member>
+        <member name="T:MapInfo.Application.RevisionInfo">
+            <summary>
+            This class gives us access to the build revision information that is originally
+            held in the Revision.h file in micore_ux.dll. Revision.h is updated when a build
+            is performed.
+            </summary>
+        </member>
+        <member name="P:MapInfo.Application.RevisionInfo.RevisionNumber">
+            <summary>
+            Returns the SVN revision number for the current build.
+            </summary>
+        </member>
+        <member name="P:MapInfo.Application.RevisionInfo.SvnRepoUrl">
+            <summary>
+            Return the SVN Repository URL for the current build.
+            </summary>
+        </member>
+        <member name="P:MapInfo.Application.RevisionInfo.SvnUserName">
+            <summary>
+            Returns the Person who performed the build. 
+            </summary>
+        </member>
+        <member name="P:MapInfo.Application.RevisionInfo.ComputerName">
+            <summary>
+            Returns the name of the computer on which this revision was built.
+            </summary>
+        </member>
+        <member name="P:MapInfo.Application.RevisionInfo.BuildDate">
+            <summary>
+            Returns the date of the last build
+            </summary>
+        </member>
+        <member name="P:MapInfo.Application.RevisionInfo.BuildType">
+            <summary>
+            Type of the Build
+            </summary>
+        </member>
+        <member name="P:MapInfo.Application.RevisionInfo.BuildVersion">
+            <summary>
+            Returns the build version ID. This will be Release, BETA, or Project Name
+            </summary>
+        </member>
+        <member name="P:MapInfo.Application.RevisionInfo.ShowBuildVersion">
+            <summary>
+            This property determines if we are showing the build information or not.
+            </summary>
+        </member>
+        <member name="T:MapInfo.Application.BuildTypes">
+            <summary>
+            This is the enum of Build types.
+            </summary>
+        </member>
+        <member name="E:MapInfo.Application.XvtHwndHost.ViewWindowMouseMove">
+            <summary>
+            Occurs for map window mouse move.
+            </summary>
+        </member>
+        <member name="M:MapInfo.Application.XvtHwndHost.OnViewWindowMouseMove(System.Int32,System.Int32)">
+            <summary>
+            Triggers map window mouse move event.
+            </summary>
+        </member>
+        <member name="E:MapInfo.Application.XvtHwndHost.ViewWindowMouseDown">
+            <summary>
+            Occurs for map window mouse down.
+            </summary>
+        </member>
+        <member name="E:MapInfo.Application.XvtHwndHost.ViewWindowMouseUp">
+            <summary>
+            Occurs for map window mouse up.
+            </summary>
+        </member>
+        <member name="E:MapInfo.Application.XvtHwndHost.ViewWindowMouseDoubleClick">
+            <summary>
+            Occurs for map window mouse double click.
+            </summary>
+        </member>
+        <member name="M:MapInfo.Application.XvtHwndHost.ViewWindowMouseButtonEventHandler(System.Int32,System.Int32,System.Boolean,System.Boolean,System.Windows.Input.MouseButton)">
+            <summary>
+            Triggers map window mouse button events.
+            </summary>
+        </member>
+        <member name="M:MapInfo.Application.XvtHwndHost.HandleMapMouseButtonMessage(System.Int32,System.IntPtr)">
+            <summary>
+            Handles the map mouse button message.
+            </summary>
+        </member>
+        <member name="M:MapInfo.Application.XvtHwndHost.MouseMessageToMouseButton(System.Int32)">
+            <summary>
+            Converts a win32 mouse message to MouseButton
+            </summary>
+        </member>
+    </members>
+</doc>

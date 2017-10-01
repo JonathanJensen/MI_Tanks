@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ArrayOfMapInfoDockingParams xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <MapInfoDockingParams Title="tanks,BYGNING,BingAerial Map" WindowType="ViewWindow">
+  <MapInfoDockingParams Title="BYGNING,Aerial Kort" WindowType="ViewWindow">
     <DockingParams>
       <PreviousFloatingWindowRect />
       <FloatWindowState>Normal</FloatWindowState>
@@ -12,7 +12,7 @@
       </PreviousContainerDesiredSize>
       <PreviousDesiredWidthInDockedMode>0</PreviousDesiredWidthInDockedMode>
       <PreviousDesiredHeightInDockedMode>0</PreviousDesiredHeightInDockedMode>
-      <Name>AddedName2</Name>
+      <Name>AddedName1</Name>
       <State>Document</State>
       <NoHeader>false</NoHeader>
       <SideDocked>Left</SideDocked>
@@ -27,13 +27,13 @@
       <CanDock>true</CanDock>
       <CanClose>true</CanClose>
       <IsSelectedTab>false</IsSelectedTab>
-      <IsActiveWindow>true</IsActiveWindow>
-      <WindowRect>8,153,969,471</WindowRect>
+      <IsActiveWindow>false</IsActiveWindow>
+      <WindowRect>29,180,969,471</WindowRect>
       <TabGroupName />
       <IsTabGroupOwner>false</IsTabGroupOwner>
       <SideTabOrder>0</SideTabOrder>
-      <IndexInDockMode>6</IndexInDockMode>
-      <IndexInFloatMode>6</IndexInFloatMode>
+      <IndexInDockMode>4</IndexInDockMode>
+      <IndexInFloatMode>4</IndexInFloatMode>
       <TabOrderInDockMode>0</TabOrderInDockMode>
       <TabOrderInFloatMode>0</TabOrderInFloatMode>
       <MDIBounds>0,0,124,50</MDIBounds>

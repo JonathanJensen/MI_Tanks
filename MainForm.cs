@@ -3,9 +3,12 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
+using System.Net.Sockets;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -18,13 +21,88 @@ namespace MI_Tanks
         private string username = null;
         private int lastUsedID = -1;
 
+        System.Net.Sockets.TcpClient clientSocket = new System.Net.Sockets.TcpClient();
+        NetworkStream serverStream = default(NetworkStream);
+        string readData = null;
+
+        private void SendMessage(string message)
+        {
+            Debug.WriteLine(message);
+            byte[] outStream = System.Text.Encoding.ASCII.GetBytes(message + "\n");
+            serverStream.Write(outStream, 0, outStream.Length);
+            serverStream.Flush();
+        }
+
         public MainForm(IMapInfoPro mapInfo, string username)
         {
             this.mapInfo = mapInfo;
             this.username = username;
             InitializeComponent();
             labelName.Text = username;
-            CreatePlayerTable(username);
+            //CreatePlayerTable(username);
+
+            try
+            {
+                clientSocket.Connect("127.0.0.1", 8066);
+                serverStream = clientSocket.GetStream();
+                SendMessage("/name " + username);
+                Thread ctThread = new Thread(getMessage);
+                ctThread.Start();
+            }
+            catch
+            {
+                MessageBox.Show("Unable to connect to server. Please try again!");
+            }
+        }
+
+        private void getMessage()
+        {
+            while (true)
+            {
+                NetworkStream ns = clientSocket.GetStream();
+                byte[] receivedBytes = new byte[1024];
+                int byte_count;
+
+                //StringBuilder text = new StringBuilder();
+
+                try
+                {
+                    while ((byte_count = ns.Read(receivedBytes, 0, receivedBytes.Length)) > 0)
+                    {
+                        string text = (Encoding.ASCII.GetString(receivedBytes, 0, byte_count));
+                        readData = text;
+                        Debug.WriteLine(text);
+                        msg();
+                    }
+                }
+                catch
+                {
+                    break;
+                }
+
+            }
+        }
+
+        private void msg()
+        {
+            if (this.InvokeRequired)
+                this.Invoke(new MethodInvoker(msg));
+            else
+            {
+                string[] lines = readData.Split('\n');
+                foreach (string line in lines)
+                {
+                    string ln = line.Trim();
+                    if (!string.IsNullOrEmpty(ln))
+                    {
+                        try
+                        {
+                            mapInfo.RunMapBasicCommand(ln);
+                        }
+                        catch { }
+                    }
+                }
+            }
         }
 
         protected override bool IsInputKey(Keys keyData)
@@ -52,42 +130,50 @@ namespace MI_Tanks
             {
                 case Keys.Left:
                     System.Diagnostics.Debug.WriteLine("left");
-                    RotateTank(0, 30);
+                    SendMessage("/left");
                     break;
                 case Keys.Right:
                     System.Diagnostics.Debug.WriteLine("right");
-                    RotateTank(0, -30);
+                    SendMessage("/right");
                     break;
                 case Keys.Up:
                     System.Diagnostics.Debug.WriteLine("up");
-                    MoveTank(0, 5);
+                    SendMessage("/up");
                     break;
                 case Keys.Down:
                     System.Diagnostics.Debug.WriteLine("down");
-                    MoveTank(0, -5);
+                    SendMessage("/down");
                     break;
                 case Keys.Space:
                     System.Diagnostics.Debug.WriteLine("Boom!");
+                    SendMessage("/fire");
                     break;
             }
         }
 
+        private void SendMapBasic(string text)
+        {
+            byte[] outStream = System.Text.Encoding.ASCII.GetBytes(text);
+            serverStream.Write(outStream, 0, outStream.Length);
+            serverStream.Flush();
+        }
+
         private void RotateTank(int id, float angle)
         {
-            mapInfo.RunMapBasicCommand($"Update {username} set obj = Rotate(obj, {angle})");
-            tankAngle += angle;
-            labelAngle.Text = tankAngle.ToString();
+            string command = $"Update {username} set obj = Rotate(obj, {angle})";
+            SendMessage("/left");
+            //            tankAngle += angle;
+            //            labelAngle.Text = tankAngle.ToString();
         }
 
         private void MoveTank(int id, int speed)
         {
-            mapInfo.RunMapBasicCommand($"Update {username} set obj = CartesianOffset(OBJ, {tankAngle+90}, {speed}, \"m\")");
+            string command = "Update {username} set obj = CartesianOffset(OBJ, {tankAngle+90}, 0.5, \"m\")";
+            SendMessage(command);
         }
 
         private void CreatePlayerTable(string name)
         {
-            lastUsedID++;
-            mapInfo.RunMapBasicCommand($"select * from tanks into {username} where ID = {lastUsedID} noselect");
         }
     }
 }

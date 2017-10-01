@@ -1,0 +1,16 @@
+!table
+!version 300
+!charset WindowsLatin1
+
+Definition Table
+  Type NATIVE Charset "WindowsLatin1"
+  Fields 3
+    ID Integer ;
+    ANGLE Integer ;
+    PLAYERNAME Char (32) ;
+begin_metadata
+"\MapInfo" = ""
+"\MapInfo\TableID" = "d290c879-906d-4874-be31-76cd74cdd4b7"
+"\MapInfo\ParentTableID" = "1e52e526-b8e8-4057-877b-582ef4a5763f"
+"\IsReadOnly" = "FALSE"
+end_metadata

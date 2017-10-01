@@ -22,16 +22,28 @@ namespace MI_Tanks
             InitializeComponent();
         }
 
-        private void textBox1_TextChanged(object sender, EventArgs e)
+        private void button1_Click(object sender, EventArgs e)
         {
+            if (textBox1.Text.All(Char.IsLetter))
+            {
+                MainForm mainForm = new MainForm(mapInfo, textBox1.Text);
+                this.Close();
+                mainForm.Show();
+            }
+            else
+                MessageBox.Show("Only letters allowed, no numbers or spaces");
 
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void UsernameForm_Load(object sender, EventArgs e)
         {
-            MainForm mainForm = new MainForm(mapInfo, textBox1.Text);
-            this.Close();
-            mainForm.Show();
+            textBox1.Focus();
+        }
+
+        private void textBox1_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+                this.Close();
         }
     }
 }

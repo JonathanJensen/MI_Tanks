@@ -8,6 +8,10 @@ using System.Windows;
 using System.Windows.Controls.Primitives;
 using MapInfo.Types;
 using MapInfo.Controls;
+using System.Threading;
+using System.Net.Sockets;
+using System.Windows.Forms;
+using System.Diagnostics;
 
 namespace MI_Tanks
 {
@@ -17,8 +21,16 @@ namespace MI_Tanks
 		private IRibbonTab homeTab;
 		private IRibbonControlGroup autoRefresherControlsGroup;
 		private IRibbonButtonControl _autoRefresherBtnCtr;
-        private MainForm mainForm = null;
+        //private MainForm mainForm = null;
+        NetworkStream serverStream = null;
 
+        private void SendMessage(string message)
+        {
+            Debug.WriteLine(message);
+            byte[] outStream = System.Text.Encoding.ASCII.GetBytes(message);
+            serverStream.Write(outStream, 0, outStream.Length);
+            serverStream.Flush();
+        }
 
         public void Initialize(IMapInfoPro mapInfoApplication, string mbxname)
 		{
@@ -93,7 +105,7 @@ namespace MI_Tanks
 
             _autoRefresherBtnCtr.IsLarge = true;
 			_autoRefresherBtnCtr.Width = 70;
-			_autoRefresherBtnCtr.HorizontalAlignment = HorizontalAlignment.Left;
+			_autoRefresherBtnCtr.HorizontalAlignment = System.Windows.HorizontalAlignment.Left;
 			_autoRefresherBtnCtr.VerticalAlignment = VerticalAlignment.Top;
 			_autoRefresherBtnCtr.KeyTip = "O";
 
@@ -145,7 +157,7 @@ namespace MI_Tanks
 
 		public IMapBasicApplication ThisApplication { get; set; }
 
-		public static Uri PathToUri(string uri)
+        public static Uri PathToUri(string uri)
 		{
 			try
 			{
@@ -156,5 +168,6 @@ namespace MI_Tanks
 				return null;
 			}
 		}
-	}
+
+    }
 }

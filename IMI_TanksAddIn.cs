@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using MapInfo.Types;
 
-using MapInfo.Types;
 
 namespace MI_Tanks
 {
