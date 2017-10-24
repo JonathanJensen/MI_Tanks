@@ -11,12 +11,14 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Windows.Threading;
 
 namespace MI_Tanks
 {
     public partial class MainForm : Form
     {
         private IMapInfoPro mapInfo;
+        private IMapBasicApplication mapbasicApplication;
         private float tankAngle = 0;
         private string username = null;
         private int lastUsedID = -1;
@@ -33,26 +35,13 @@ namespace MI_Tanks
             serverStream.Flush();
         }
 
-        public MainForm(IMapInfoPro mapInfo, string username)
+        public MainForm(IMapInfoPro mapInfo, IMapBasicApplication mbApplication, string username)
         {
             this.mapInfo = mapInfo;
+            this.mapbasicApplication = mbApplication;
             this.username = username;
             InitializeComponent();
-            labelName.Text = username;
-            //CreatePlayerTable(username);
-
-            try
-            {
-                clientSocket.Connect("127.0.0.1", 8066);
-                serverStream = clientSocket.GetStream();
-                SendMessage("/name " + username);
-                Thread ctThread = new Thread(getMessage);
-                ctThread.Start();
-            }
-            catch
-            {
-                MessageBox.Show("Unable to connect to server. Please try again!");
-            }
+           
         }
 
         private void getMessage()
@@ -92,12 +81,39 @@ namespace MI_Tanks
                 string[] lines = readData.Split('\n');
                 foreach (string line in lines)
                 {
-                    string ln = line.Trim();
+                    string ln = line.Trim('\r');
                     if (!string.IsNullOrEmpty(ln))
                     {
                         try
                         {
-                            mapInfo.RunMapBasicCommand(ln);
+                            /*NotificationObject obj = new NotificationObject();
+                            obj.Message = "Test bubble";
+                            obj.NotificationLocation = new System.Windows.Point(10, 10);
+                            obj.Title = "Title Test";
+                            obj.Type = NotificationType.Info;
+                            obj.TimeToShow = 2000;
+                            mapInfo.ShowNotification(obj);*/
+
+                            this.Invoke(new MethodInvoker(delegate {
+                                try
+                                {
+                                    mapInfo.RunMapBasicCommand(ln);
+                                }
+                                catch { }
+                            }));
+                            /*
+                            if (!Application.Current.Dispatcher.CheckAccess())
+                            {
+                                Application.Current.Dispatcher.Invoke(
+                                        () => mapInfo.RunMapBasicCommand(ln), DispatcherPriority.Normal);
+                            }
+                            else
+                            {
+                                mapInfo.RunMapBasicCommand(ln);
+                            }
+                        */
+                            Application.DoEvents();
+                            //System.Threading.Thread.Sleep(100);
                         }
                         catch { }
                     }
@@ -174,6 +190,25 @@ namespace MI_Tanks
 
         private void CreatePlayerTable(string name)
         {
+        }
+
+        private void MainForm_Load(object sender, EventArgs e)
+        {
+            labelName.Text = username;
+            //CreatePlayerTable(username);
+
+            try
+            {
+                clientSocket.Connect("127.0.0.1", 8066);
+                serverStream = clientSocket.GetStream();
+                SendMessage("/name " + username);
+                Thread ctThread = new Thread(getMessage);
+                ctThread.Start();
+            }
+            catch
+            {
+                MessageBox.Show("Unable to connect to server. Please try again!");
+            }
         }
     }
 }

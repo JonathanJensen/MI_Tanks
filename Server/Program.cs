@@ -73,21 +73,34 @@ namespace MI_Tanks_Server
                             {
                                 player.Name = ln.Substring(6);
                                 player.Id = nextid;
+                                Console.WriteLine("Player joined: " + player.Name);
                                 // TODO: This should be broadcast to all connected clients, as they all need to add the new player.
-                                SendMessage(player, "Open Table \"C:\\source\\MI_Tanks\\MapInfo_Files\\tank.TAB\""); // Open tab file with dummy tank object
-                                SendMessage(player, "Open Table \"C:\\source\\MI_Tanks\\MapInfo_Files\\Players.TAB\""); // Open table with players
-                                SendMessage(player, "Add Map Auto Layer Players Animate"); // Add players table to map as animated layer
-                                SendMessage(player, "Select * from tank into temp_tank"); // Make copy of dummy tank object
-                                SendMessage(player, "update temp_tank set id = "+player.Id); // Set player id
-                                SendMessage(player, "update temp_tank set playername=\""+player.Name+"\""); // Set player name
-                                SendMessage(player, "update temp_tank set obj=CartesianOffsetXY(obj, 556560.0, 6322636.0, \"m\")"); // move from 0,0 into map area
-                                SendMessage(player, "insert into Players select * from temp_tank"); // Copy tank into list of players
-                                SendMessage(player, "Close Table tank");
-                                SendMessage(player, "Close Table temp_tank");
-                                SendMessage(player, "select * from Players into "+player.Name+" where ID = "+player.Id+" noselect"); // Create query for each player. This will both make a nice player list, and make it possible to move and rotate the geometry of each individual player
+                                broadcast("Open Table \"C:\\source\\MI_Tanks\\MapInfo_Files\\tank.TAB\""); // Open tab file with dummy tank object
+                    //            Thread.Sleep(100);
+                                broadcast( "Open Table \"C:\\source\\MI_Tanks\\MapInfo_Files\\Players.TAB\""); // Open table with players
+                  //              Thread.Sleep(100);
+                                broadcast( "Add Map Auto Layer Players Animate"); // Add players table to map as animated layer
+                //                Thread.Sleep(100);
+                                broadcast( "Select * from tank into temp_tank"); // Make copy of dummy tank object
+              //                  Thread.Sleep(100);
+                                broadcast( "update temp_tank set id = "+player.Id); // Set player id
+            //                    Thread.Sleep(100);
+                                broadcast( "update temp_tank set playername=\""+player.Name+"\""); // Set player name
+          //                      Thread.Sleep(100);
+                                broadcast( "update temp_tank set obj=CartesianOffsetXY(obj, 556560.0, 6322636.0, \"m\")"); // move from 0,0 into map area
+        //                        Thread.Sleep(100);
+                                broadcast( "insert into Players select * from temp_tank"); // Copy tank into list of players
+      //                          Thread.Sleep(100);
+                                broadcast( "Close Table tank");
+    //                            Thread.Sleep(100);
+                                broadcast( "Close Table temp_tank");
+  //                              Thread.Sleep(100);
+                                broadcast( "select * from Players into "+player.Name+" where ID = "+player.Id+" noselect"); // Create query for each player. This will both make a nice player list, and make it possible to move and rotate the geometry of each individual player
+//                                Thread.Sleep(100);
                                 //SendMessage(player.Connection, "");
                                 // Ready to play
-                            } else if (ln.StartsWith("/left"))
+                            }
+                            else if (ln.StartsWith("/left"))
                             {
                                 player.Angle += rotation;
                                 broadcast("Update "+player.Name+" set obj = Rotate(obj, "+rotation+")");

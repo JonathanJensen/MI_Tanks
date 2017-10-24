@@ -32,7 +32,7 @@ Declare Function AddIn_Name() As String
 Declare Function AddIn_Description() As String 
 Declare Function AddIn_ImageUri() As String 
 Declare Function AddIn_Version () As String
-
+Declare Sub Join(id as integer, name as string)
 
 Global mapinfoApplication as This
 Global mbAddIn as This
@@ -98,3 +98,18 @@ End Sub
 Function AddIn_ImageUri() As String
  AddIn_ImageUri = "pack://application:,,,/MapInfo.StyleResources;component/Images/Table/newTable_16x16.png"
 End Function
+
+Sub Join(id as Integer, name as String)
+	PRINT name & " connected"
+	Open Table "C:\source\MI_Tanks\MapInfo_Files\tank.TAB"
+	Open Table "C:\source\MI_Tanks\MapInfo_Files\Players.TAB"
+	Add Map Auto Layer Players Animate
+	Select * from tank into temp_tank
+	update temp_tank set id = id
+	update temp_tank set playername=name
+	update temp_tank set obj=CartesianOffsetXY(obj, 556560.0, 6322636.0, "m")
+	insert into Players select * from temp_tank
+	Close Table tank
+	Close Table temp_tank
+	select * from Players into name where ID = id noselect
+End Sub

@@ -132,7 +132,7 @@ namespace MI_Tanks
 		{
             //mainForm = new MainForm(MapInfoApplication);
             //mainForm.Show();
-            UsernameForm unf = new UsernameForm(MapInfoApplication);
+            UsernameForm unf = new UsernameForm(MapInfoApplication, ThisApplication);
             unf.Show();
 
             //MessageBox.Show("The Open Gallery demo button was clicked.");

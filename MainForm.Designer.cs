@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.labelAngle = new System.Windows.Forms.Label();
@@ -106,6 +107,7 @@
             this.Name = "MainForm";
             this.Text = "MI Tanks!";
             this.TopMost = true;
+            this.Load += new System.EventHandler(this.MainForm_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 

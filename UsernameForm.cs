@@ -15,10 +15,12 @@ namespace MI_Tanks
     public partial class UsernameForm : Form
     {
         private IMapInfoPro mapInfo;
+        private IMapBasicApplication mapbasicApplication;
 
-        public UsernameForm(IMapInfoPro mapInfo)
+        public UsernameForm(IMapInfoPro mapInfo, IMapBasicApplication mbApp)
         {
             this.mapInfo = mapInfo;
+            this.mapbasicApplication = mbApp;
             InitializeComponent();
         }
 
@@ -26,7 +28,7 @@ namespace MI_Tanks
         {
             if (textBox1.Text.All(Char.IsLetter))
             {
-                MainForm mainForm = new MainForm(mapInfo, textBox1.Text);
+                MainForm mainForm = new MainForm(mapInfo, mapbasicApplication, textBox1.Text);
                 this.Close();
                 mainForm.Show();
             }
