@@ -94,13 +94,22 @@ namespace MI_Tanks
                             obj.TimeToShow = 2000;
                             mapInfo.ShowNotification(obj);*/
 
-                            this.Invoke(new MethodInvoker(delegate {
-                                try
-                                {
-                                    mapInfo.RunMapBasicCommand(ln);
-                                }
-                                catch { }
-                            }));
+                            if (ln.StartsWith("/mb "))
+                            {
+                                ln = ln.Replace("/mb ", "");
+
+                                RunMBCommand(ln);
+                            }
+                            // These are done seperatly on the client so we can have relative paths to the mbx in the future
+                            else if(ln.StartsWith("/OpnTnkTbl"))
+                            {
+                                RunMBCommand("Open Table \"C:\\source\\MI_Tanks\\MapInfo_Files\\tank.TAB\"");
+                            }
+                            else if (ln.StartsWith("/OpnPlrTbl"))
+                            {
+                                RunMBCommand("Open Table \"C:\\source\\MI_Tanks\\MapInfo_Files\\Players.TAB\"");
+                            }
+
                             /*
                             if (!Application.Current.Dispatcher.CheckAccess())
                             {
@@ -119,6 +128,18 @@ namespace MI_Tanks
                     }
                 }
             }
+        }
+
+        private void RunMBCommand(string command)
+        {
+            this.Invoke(new MethodInvoker(delegate
+            {
+                try
+                {
+                    mapInfo.RunMapBasicCommand(command);
+                }
+                catch { }
+            }));
         }
 
         protected override bool IsInputKey(Keys keyData)

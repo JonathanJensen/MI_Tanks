@@ -26,15 +26,7 @@ namespace MI_Tanks
 
         private void button1_Click(object sender, EventArgs e)
         {
-            if (textBox1.Text.All(Char.IsLetter))
-            {
-                MainForm mainForm = new MainForm(mapInfo, mapbasicApplication, textBox1.Text);
-                this.Close();
-                mainForm.Show();
-            }
-            else
-                MessageBox.Show("Only letters allowed, no numbers or spaces");
-
+            Join();
         }
 
         private void UsernameForm_Load(object sender, EventArgs e)
@@ -45,7 +37,20 @@ namespace MI_Tanks
         private void textBox1_KeyUp(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Enter)
-                this.Close();
+                Join();
         }
+
+        private void Join()
+        {
+            if (textBox1.Text.All(Char.IsLetter))
+            {
+                MainForm mainForm = new MainForm(mapInfo, mapbasicApplication, textBox1.Text);
+                this.Close();
+                mainForm.Show();
+            }
+            else
+                MessageBox.Show("Only letters allowed, no numbers or spaces");
+        }
+
     }
 }

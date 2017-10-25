@@ -18,7 +18,6 @@ namespace MI_Tanks_Server
     {
         static readonly object _lock = new object();
         static readonly Dictionary<int, Player> clients = new Dictionary<int, Player>();
-        private static int nextid = 1;
         private static int rotation = 15;
         private static double move = 1.0;
         static void Main(string[] args)
@@ -72,53 +71,44 @@ namespace MI_Tanks_Server
                             if (ln.StartsWith("/name"))
                             {
                                 player.Name = ln.Substring(6);
-                                player.Id = nextid;
+                                player.Id = id;
                                 Console.WriteLine("Player joined: " + player.Name);
                                 // TODO: This should be broadcast to all connected clients, as they all need to add the new player.
-                                broadcast("Open Table \"C:\\source\\MI_Tanks\\MapInfo_Files\\tank.TAB\""); // Open tab file with dummy tank object
-                    //            Thread.Sleep(100);
-                                broadcast( "Open Table \"C:\\source\\MI_Tanks\\MapInfo_Files\\Players.TAB\""); // Open table with players
-                  //              Thread.Sleep(100);
-                                broadcast( "Add Map Auto Layer Players Animate"); // Add players table to map as animated layer
-                //                Thread.Sleep(100);
-                                broadcast( "Select * from tank into temp_tank"); // Make copy of dummy tank object
-              //                  Thread.Sleep(100);
-                                broadcast( "update temp_tank set id = "+player.Id); // Set player id
-            //                    Thread.Sleep(100);
-                                broadcast( "update temp_tank set playername=\""+player.Name+"\""); // Set player name
-          //                      Thread.Sleep(100);
-                                broadcast( "update temp_tank set obj=CartesianOffsetXY(obj, 556560.0, 6322636.0, \"m\")"); // move from 0,0 into map area
-        //                        Thread.Sleep(100);
-                                broadcast( "insert into Players select * from temp_tank"); // Copy tank into list of players
-      //                          Thread.Sleep(100);
-                                broadcast( "Close Table tank");
-    //                            Thread.Sleep(100);
-                                broadcast( "Close Table temp_tank");
-  //                              Thread.Sleep(100);
-                                broadcast( "select * from Players into "+player.Name+" where ID = "+player.Id+" noselect"); // Create query for each player. This will both make a nice player list, and make it possible to move and rotate the geometry of each individual player
-//                                Thread.Sleep(100);
+
+                                broadcast( "/OpnTnkTbl"); // Open tab file with dummy tank object
+                                broadcast( "/OpnPlrTbl"); // Open table with players
+                                broadcast( "/mb Add Map Auto Layer Players Animate"); // Add players table to map as animated layer
+                                broadcast( "/mb Select * from tank into temp_tank"); // Make copy of dummy tank object
+                                broadcast( "/mb update temp_tank set id = "+player.Id); // Set player id
+                                broadcast( "/mb update temp_tank set playername=\""+player.Name+"\""); // Set player name
+                                broadcast( "/mb update temp_tank set obj=CartesianOffsetXY(obj, 556560.0, 6322636.0, \"m\")"); // move from 0,0 into map area
+                                broadcast( "/mb insert into Players select * from temp_tank"); // Copy tank into list of players
+                                broadcast( "/mb Close Table tank");
+                                broadcast( "/mb Close Table temp_tank");
+                                broadcast( "/mb select * from Players into "+player.Name+" where ID = "+player.Id+" noselect"); // Create query for each player. This will both make a nice player list, and make it possible to move and rotate the geometry of each individual player
+                                
                                 //SendMessage(player.Connection, "");
                                 // Ready to play
                             }
                             else if (ln.StartsWith("/left"))
                             {
                                 player.Angle += rotation;
-                                broadcast("Update "+player.Name+" set obj = Rotate(obj, "+rotation+")");
+                                broadcast("/mb Update "+player.Name+" set obj = Rotate(obj, "+rotation+")");
                             }
                             else if (ln.StartsWith("/right"))
                             {
                                 player.Angle -= rotation;
-                                broadcast("Update " + player.Name + " set obj = Rotate(obj, -"+rotation+")");
+                                broadcast("/mb Update " + player.Name + " set obj = Rotate(obj, -"+rotation+")");
                             }
                             else if (ln.StartsWith("/up"))
                             {
                                 // Calculate new player x,y
                                 // TODO: Brug czartesianoffset funktionen i stedet for, så er vi sikre på at de flytter samme afstand som vi selv har beregnet
-                                broadcast("Update "+player.Name+" set obj = CartesianOffset(OBJ, "+(player.Angle+90)+", "+move.ToString(CultureInfo.InvariantCulture)+", \"m\")");
+                                broadcast("/mb Update " + player.Name+" set obj = CartesianOffset(OBJ, "+(player.Angle+90)+", "+move.ToString(CultureInfo.InvariantCulture)+", \"m\")");
                             }
                             else if (ln.StartsWith("/down"))
                             {
-                                broadcast("Update " + player.Name + " set obj = CartesianOffset(OBJ, " + (player.Angle + 90) + ", " + move.ToString(CultureInfo.InvariantCulture) + ", \"m\")");
+                                broadcast("/mb Update " + player.Name + " set obj = CartesianOffset(OBJ, " + (player.Angle + 90) + ", " + move.ToString(CultureInfo.InvariantCulture) + ", \"m\")");
                             }
                             else if (ln.StartsWith("/fire"))
                             {
