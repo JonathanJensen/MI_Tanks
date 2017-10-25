@@ -22,6 +22,7 @@ namespace MI_Tanks
         private float tankAngle = 0;
         private string username = null;
         private int lastUsedID = -1;
+        private bool disableMB = false;
 
         System.Net.Sockets.TcpClient clientSocket = new System.Net.Sockets.TcpClient();
         NetworkStream serverStream = default(NetworkStream);
@@ -41,7 +42,8 @@ namespace MI_Tanks
             this.mapbasicApplication = mbApplication;
             this.username = username;
             InitializeComponent();
-           
+            KeyPreview = true;
+
         }
 
         private void getMessage()
@@ -94,20 +96,23 @@ namespace MI_Tanks
                             obj.TimeToShow = 2000;
                             mapInfo.ShowNotification(obj);*/
 
-                            if (ln.StartsWith("/mb "))
+                            if (!disableMB)
                             {
-                                ln = ln.Replace("/mb ", "");
+                                if (ln.StartsWith("/mb "))
+                                {
+                                    ln = ln.Replace("/mb ", "");
 
-                                RunMBCommand(ln);
-                            }
-                            // These are done seperatly on the client so we can have relative paths to the mbx in the future
-                            else if(ln.StartsWith("/OpnTnkTbl"))
-                            {
-                                RunMBCommand("Open Table \"C:\\source\\MI_Tanks\\MapInfo_Files\\tank.TAB\"");
-                            }
-                            else if (ln.StartsWith("/OpnPlrTbl"))
-                            {
-                                RunMBCommand("Open Table \"C:\\source\\MI_Tanks\\MapInfo_Files\\Players.TAB\"");
+                                    RunMBCommand(ln);
+                                }
+                                // These are done seperatly on the client so we can have relative paths from the mbx in the future
+                                else if (ln.StartsWith("/OpnTnkTbl"))
+                                {
+                                    RunMBCommand("Open Table \"C:\\source\\MI_Tanks\\MapInfo_Files\\tank.TAB\"");
+                                }
+                                else if (ln.StartsWith("/OpnPlrTbl"))
+                                {
+                                    RunMBCommand("Open Table \"C:\\source\\MI_Tanks\\MapInfo_Files\\Players.TAB\"");
+                                }
                             }
 
                             /*
@@ -216,6 +221,7 @@ namespace MI_Tanks
         private void MainForm_Load(object sender, EventArgs e)
         {
             labelName.Text = username;
+            disableMB = !checkBoxAcceptMB.Checked;
             //CreatePlayerTable(username);
 
             try
@@ -230,6 +236,11 @@ namespace MI_Tanks
             {
                 MessageBox.Show("Unable to connect to server. Please try again!");
             }
+        }
+
+        private void checkBoxAcceptMB_CheckedChanged(object sender, EventArgs e)
+        {
+            disableMB = !((CheckBox)sender).Checked;
         }
     }
 }
