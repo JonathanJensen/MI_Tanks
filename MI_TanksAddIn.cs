@@ -12,6 +12,8 @@ using System.Threading;
 using System.Net.Sockets;
 using System.Windows.Forms;
 using System.Diagnostics;
+using System.IO;
+using System.Reflection;
 
 namespace MI_Tanks
 {
@@ -39,10 +41,6 @@ namespace MI_Tanks
 			MapInfoApplication = mapInfoApplication;
 			ThisApplication = MapInfoApplication.GetMapBasicApplication(mbxname);
 
-            MapInfoApplication.RunMapBasicCommand(
-				string.Format("print \"app domain id {0}, mbxname {1}\"", AppDomain.CurrentDomain.Id, ThisApplication.Name), false);
-            // Add a button to the open gallery in Home Tab.
-            
             AddButtonToOpenGalleryInHomeTab();
 		}
 
@@ -68,19 +66,15 @@ namespace MI_Tanks
 
 		private void AddButtonToOpenGalleryInHomeTab()
 		{
-            MapInfoApplication.RunMapBasicCommand("print \"Adding button to homeTab\"", false);
             //Access the home tab.
             if (MapInfoApplication.Ribbon.Tabs == null || MapInfoApplication.Ribbon.Tabs.Count <= 0)
             {
-                MapInfoApplication.RunMapBasicCommand("print \"no homeTab\"", false);
                 return;
             }
 
 			homeTab = MapInfoApplication.Ribbon.Tabs[0];
             if (homeTab == null)
             {
-                MapInfoApplication.RunMapBasicCommand("print \"homeTab = null\"", false);
-
                 return;
             }
 
@@ -96,10 +90,9 @@ namespace MI_Tanks
             };
 
             _autoRefresherBtnCtr =
-                autoRefresherControlsGroup.Controls.Add("Tanks", "Tanks game") as IRibbonButtonControl;
+                autoRefresherControlsGroup.Controls.Add("Tanks", "MI_Tanks") as IRibbonButtonControl;
 			if(_autoRefresherBtnCtr == null)
             {
-                MapInfoApplication.RunMapBasicCommand("print \"_demoButtonControlGalleryItem = null\"", false);
                 return;
             }
 
@@ -107,7 +100,10 @@ namespace MI_Tanks
 			_autoRefresherBtnCtr.Width = 70;
 			_autoRefresherBtnCtr.HorizontalAlignment = System.Windows.HorizontalAlignment.Left;
 			_autoRefresherBtnCtr.VerticalAlignment = VerticalAlignment.Top;
-			_autoRefresherBtnCtr.KeyTip = "O";
+            string assemblyFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            _autoRefresherBtnCtr.LargeIcon = new Uri(Path.Combine(assemblyFolder, "tank.png"));
+            _autoRefresherBtnCtr.SmallIcon = new Uri(Path.Combine(assemblyFolder, "tank.png"));
+            _autoRefresherBtnCtr.KeyTip = "T";
 
 			//Set the tooltip
 			_autoRefresherBtnCtr.ToolTip = new MapInfoRibbonToolTip()
@@ -121,11 +117,6 @@ namespace MI_Tanks
 
 			//We are going to wrap the function which needs to be called when the button is clicked in a Delegate Command.
 			_autoRefresherBtnCtr.Command = new DelegateCommand(OnOpenAutoRefresherBtnCtrClicked).ViewToContractAdapter();
-
-			_autoRefresherBtnCtr.LargeIcon =
-						PathToUri("pack://application:,,,/MapInfo.StyleResources;component/Images/Mapping/infoTool_32x32.png");
-			_autoRefresherBtnCtr.SmallIcon =
-				PathToUri("pack://application:,,,/MapInfo.StyleResources;component/Images/Mapping/infoTool_16x16.png");
 		}
 
 		void OnOpenAutoRefresherBtnCtrClicked(object sender)

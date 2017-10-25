@@ -29,10 +29,14 @@ namespace MI_Tanks
 
         private void SendMessage(string message)
         {
-            Debug.WriteLine(message);
-            byte[] outStream = System.Text.Encoding.ASCII.GetBytes(message + "\n");
-            serverStream.Write(outStream, 0, outStream.Length);
-            serverStream.Flush();
+            try
+            {
+                Debug.WriteLine(message);
+                byte[] outStream = System.Text.Encoding.ASCII.GetBytes(message + "\n");
+                serverStream.Write(outStream, 0, outStream.Length);
+                serverStream.Flush();
+            }
+            catch { }
         }
 
         public MainForm(IMapInfoPro mapInfo, IMapBasicApplication mbApplication, string username)
@@ -230,6 +234,12 @@ namespace MI_Tanks
             {
                 MessageBox.Show("Unable to connect to server. Please try again!");
             }
+        }
+
+        private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            SendMessage("/quit");
+            mapInfo.RunMapBasicCommand("END MAPINFO");
         }
     }
 }
