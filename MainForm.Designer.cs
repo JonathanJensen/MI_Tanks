@@ -34,6 +34,7 @@
             this.labelName = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.labelHP = new System.Windows.Forms.Label();
+            this.checkBoxAcceptMB = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // label1
@@ -90,11 +91,25 @@
             this.labelHP.TabIndex = 1;
             this.labelHP.Text = "label1";
             // 
+            // checkBoxAcceptMB
+            // 
+            this.checkBoxAcceptMB.AutoSize = true;
+            this.checkBoxAcceptMB.Checked = true;
+            this.checkBoxAcceptMB.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBoxAcceptMB.Location = new System.Drawing.Point(13, 119);
+            this.checkBoxAcceptMB.Name = "checkBoxAcceptMB";
+            this.checkBoxAcceptMB.Size = new System.Drawing.Size(133, 17);
+            this.checkBoxAcceptMB.TabIndex = 2;
+            this.checkBoxAcceptMB.Text = "Accept MB commands";
+            this.checkBoxAcceptMB.UseVisualStyleBackColor = true;
+            this.checkBoxAcceptMB.CheckedChanged += new System.EventHandler(this.checkBoxAcceptMB_CheckedChanged);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(210, 148);
+            this.Controls.Add(this.checkBoxAcceptMB);
             this.Controls.Add(this.labelHP);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.labelAngle);
@@ -121,5 +136,6 @@
         private System.Windows.Forms.Label labelName;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label labelHP;
+        private System.Windows.Forms.CheckBox checkBoxAcceptMB;
     }
 }

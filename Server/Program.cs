@@ -72,55 +72,49 @@ namespace MI_Tanks_Server
                             if (ln.StartsWith("/name"))
                             {
                                 player.Name = ln.Substring(6);
-                                player.Id = nextid;
-                                nextid++;
+                                player.Id = id;
                                 Console.WriteLine("Player joined: " + player.Name);
                                 
                                 // TODO: This should be broadcast to all connected clients, as they all need to add the new player.
-                                broadcast("Open Table \"C:\\source\\MI_Tanks\\MapInfo_Files\\tank.TAB\""); // Open tab file with dummy tank object
-                                                                                                           //            Thread.Sleep(100);
-                                SendMessage(player, "Open Table \"C:\\source\\MI_Tanks\\MapInfo_Files\\Players.TAB\""); // Open table with players
-                                                                                                                         //              Thread.Sleep(100);
-                                SendMessage(player, "Add Map Auto Layer Players Animate"); // Add players table to map as animated layer
-                //                Thread.Sleep(100);
-                                broadcast( "Select * from tank into temp_tank"); // Make copy of dummy tank object
-              //                  Thread.Sleep(100);
-                                broadcast( "update temp_tank set id = "+player.Id); // Set player id
-            //                    Thread.Sleep(100);
-                                broadcast( "update temp_tank set playername=\""+player.Name+"\""); // Set player name
-          //                      Thread.Sleep(100);
-                                broadcast( "update temp_tank set obj=CartesianOffsetXY(obj, 556560.0, 6322636.0, \"m\")"); // move from 0,0 into map area
-        //                        Thread.Sleep(100);
-                                broadcast( "insert into Players select * from temp_tank"); // Copy tank into list of players
-                                                                                           //                          Thread.Sleep(100);
-                                SendMessage(player, "Close Table tank");
-    //                            Thread.Sleep(100);
-                                broadcast( "Close Table temp_tank");
-  //                              Thread.Sleep(100);
-                                broadcast( "select * from Players into "+player.Name+" where ID = "+player.Id+" noselect"); // Create query for each player. This will both make a nice player list, and make it possible to move and rotate the geometry of each individual player
-//                                Thread.Sleep(100);
+
+                                // The joining player will be brought up to date with all the other players locations
+                                JoinGame(player);
+
+                                // Then the current player broadcasts themselves to everyone (including themselves)
+                                broadcast( "/OpnTnkTbl"); // Open tab file with dummy tank object
+                                broadcast( "/OpnPlrTbl"); // Open table with players
+                                broadcast( "/mb Add Map Auto Layer Players Animate"); // Add players table to map as animated layer
+                                broadcast( "/mb Select * from tank into temp_tank"); // Make copy of dummy tank object
+                                broadcast( "/mb update temp_tank set id = "+player.Id); // Set player id
+                                broadcast( "/mb update temp_tank set playername=\""+player.Name+"\""); // Set player name
+                                broadcast( "/mb update temp_tank set obj=CartesianOffsetXY(obj, 556560.0, 6322636.0, \"m\")"); // move from 0,0 into map area
+                                broadcast( "/mb insert into Players select * from temp_tank"); // Copy tank into list of players
+                                broadcast( "/mb Close Table tank");
+                                broadcast( "/mb Close Table temp_tank");
+                                broadcast( "/mb select * from Players into "+player.Name+" where ID = "+player.Id+" noselect"); // Create query for each player. This will both make a nice player list, and make it possible to move and rotate the geometry of each individual player
+
                                 //SendMessage(player.Connection, "");
                                 // Ready to play
                             }
                             else if (ln.StartsWith("/left"))
                             {
                                 player.Angle += rotation;
-                                broadcast("Update "+player.Name+" set obj = Rotate(obj, "+rotation+")");
+                                broadcast("/mb Update " + player.Name+" set obj = Rotate(obj, "+rotation+")");
                             }
                             else if (ln.StartsWith("/right"))
                             {
                                 player.Angle -= rotation;
-                                broadcast("Update " + player.Name + " set obj = Rotate(obj, -"+rotation+")");
+                                broadcast("/mb Update " + player.Name + " set obj = Rotate(obj, -"+rotation+")");
                             }
                             else if (ln.StartsWith("/up"))
                             {
                                 // Calculate new player x,y
                                 // TODO: Brug czartesianoffset funktionen i stedet for, så er vi sikre på at de flytter samme afstand som vi selv har beregnet
-                                broadcast("Update "+player.Name+" set obj = CartesianOffset(OBJ, "+(player.Angle+90)+", "+move.ToString(CultureInfo.InvariantCulture)+", \"m\")");
+                                broadcast("/mb Update " + player.Name+" set obj = CartesianOffset(OBJ, "+(player.Angle+90)+", "+move.ToString(CultureInfo.InvariantCulture)+", \"m\")");
                             }
                             else if (ln.StartsWith("/down"))
                             {
-                                broadcast("Update " + player.Name + " set obj = CartesianOffset(OBJ, " + (player.Angle + 90) + ", " + move.ToString(CultureInfo.InvariantCulture) + ", \"m\")");
+                                broadcast("/mb Update " + player.Name + " set obj = CartesianOffset(OBJ, " + (player.Angle + 90) + ", " + move.ToString(CultureInfo.InvariantCulture) + ", \"m\")");
                             }
                             else if (ln.StartsWith("/fire"))
                             {
@@ -147,6 +141,29 @@ namespace MI_Tanks_Server
             lock (_lock) clients.Remove(id);
             player.Connection.Client.Shutdown(SocketShutdown.Both);
             player.Connection.Client.Close();
+        }
+
+        private static void JoinGame(Player joiningPlayer)
+        {
+            foreach (Player player in clients.Values)
+            {
+                if (player != joiningPlayer)
+                {
+                    SendMessage(joiningPlayer, "/OpnTnkTbl"); // Open tab file with dummy tank object
+                    SendMessage(joiningPlayer, "/OpnPlrTbl"); // Open table with players
+                    SendMessage(joiningPlayer, "/mb Add Map Auto Layer Players Animate"); // Add players table to map as animated layer
+                    SendMessage(joiningPlayer, "/mb Select * from tank into temp_tank"); // Make copy of dummy tank object
+                    SendMessage(joiningPlayer, "/mb update temp_tank set id = " + player.Id); // Set player id
+                    SendMessage(joiningPlayer, "/mb update temp_tank set playername=\"" + player.Name + "\""); // Set player name
+                    SendMessage(joiningPlayer, $"/mb update temp_tank set obj=CartesianOffsetXY(obj, {556560.0 + player.X}, {6322636.0 + player.Y}, \"m\")"); // move from 0,0 into map area
+                    SendMessage(joiningPlayer, "/mb update temp_tank set obj = Rotate(obj, " + player.Angle + ")");
+                    SendMessage(joiningPlayer, "/mb insert into Players select * from temp_tank"); // Copy tank into list of players
+                    SendMessage(joiningPlayer, "/mb Close Table tank");
+                    SendMessage(joiningPlayer, "/mb Close Table temp_tank");
+                    SendMessage(joiningPlayer, "/mb select * from Players into " + player.Name + " where ID = " + player.Id + " noselect"); // Create query for each player. This will both make a nice player list, and make it possible to move and rotate the geometry of each individual player
+                    Thread.Sleep(100);
+                }
+            }
         }
 
         public static void SendMessage(Player player, string message)
