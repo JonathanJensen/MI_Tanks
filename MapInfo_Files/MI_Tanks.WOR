@@ -32,6 +32,3 @@ Set Map
     transparency off 
   color 16777215 
     grayscale off 
-Set Window FrontWindow() Printer
- Name "CutePDF Writer" Orientation Portrait Copies 1
- Papersize 9
