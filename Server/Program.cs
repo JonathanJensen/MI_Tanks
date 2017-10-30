@@ -11,6 +11,7 @@ using System.Threading;
 using System.Globalization;
 using System.Diagnostics;
 using MI_Tanks_Server;
+using System.Drawing;
 
 namespace MI_Tanks_Server
 {
@@ -21,6 +22,7 @@ namespace MI_Tanks_Server
         private static int nextid = 1;
         private static int rotation = 15;
         private static double move = 1.0;
+        private static Color[] colors = new Color[] { Color.Red, Color.Magenta, Color.Green, Color.Cyan, Color.Yellow, Color.White, Color.Blue };
         static void Main(string[] args)
         {
             int count = 1;
@@ -69,9 +71,9 @@ namespace MI_Tanks_Server
                         string ln = line.Trim();
                         if (ln.StartsWith("/")) // Command only for server
                         {
-                            if (ln.StartsWith("/name"))
+                            if (ln.StartsWith("/n"))
                             {
-                                player.Name = ln.Substring(6);
+                                player.Name = ln.Substring(3);
                                 player.Id = id;
                                 Console.WriteLine("Player joined: " + player.Name);
                                 
@@ -81,51 +83,59 @@ namespace MI_Tanks_Server
                                 JoinGame(player);
 
                                 // Then the current player broadcasts themselves to everyone (including themselves)
-                                broadcast( "/OpnTnkTbl"); // Open tab file with dummy tank object
-                                broadcast( "/OpnPlrTbl"); // Open table with players
-                                broadcast( "/mb Add Map Auto Layer Players Animate"); // Add players table to map as animated layer
-                                broadcast( "/mb Select * from tank into temp_tank"); // Make copy of dummy tank object
-                                broadcast( "/mb update temp_tank set id = "+player.Id); // Set player id
-                                broadcast( "/mb update temp_tank set playername=\""+player.Name+"\""); // Set player name
-                                broadcast( "/mb update temp_tank set obj=CartesianOffsetXY(obj, 556560.0, 6322636.0, \"m\")"); // move from 0,0 into map area
-                                broadcast( "/mb insert into Players select * from temp_tank"); // Copy tank into list of players
-                                broadcast( "/mb Close Table tank");
-                                broadcast( "/mb Close Table temp_tank");
-                                broadcast( "/mb select * from Players into "+player.Name+" where ID = "+player.Id+" noselect"); // Create query for each player. This will both make a nice player list, and make it possible to move and rotate the geometry of each individual player
+                                broadcast("/OpnTnkTbl", null); // Open tab file with dummy tank object
+                                broadcast("/OpnPlrTbl", null); // Open table with players
+                                broadcast("/mb Add Map Auto Layer Players Animate", null); // Add players table to map as animated layer
+                                broadcast("/mb Select * from tank into temp_tank", null); // Make copy of dummy tank object
+                                broadcast("/mb update temp_tank set id = "+player.Id, null); // Set player id
+                                broadcast("/mb update temp_tank set playername=\""+player.Name+"\"", null); // Set player name
+                                broadcast("/mb update temp_tank set obj=CartesianOffsetXY(obj, 556560.0, 6322636.0, \"m\")", null); // move from 0,0 into map area
+                                broadcast("/mb insert into Players select * from temp_tank", null); // Copy tank into list of players
+                                broadcast("/mb Close Table tank", null);
+                                broadcast("/mb Close Table temp_tank", null);
+                                broadcast("/mb select * from Players into "+player.Name+" where ID = "+player.Id+" noselect", null); // Create query for each player. This will both make a nice player list, and make it possible to move and rotate the geometry of each individual player
+                                broadcast("/c " + player.Name + ","+(colors[player.Id % 7].ToArgb() & 0xFFFFFF), null);
 
                                 //SendMessage(player.Connection, "");
                                 // Ready to play
                             }
-                            else if (ln.StartsWith("/left"))
+                            else if (ln.StartsWith("/l"))
                             {
                                 player.Angle += rotation;
-                                broadcast("/mb Update " + player.Name+" set obj = Rotate(obj, "+rotation+")");
+                                broadcast("/mb Update " + player.Name+" set obj = Rotate(obj, "+rotation+")", player);
                             }
-                            else if (ln.StartsWith("/right"))
+                            else if (ln.StartsWith("/r"))
                             {
                                 player.Angle -= rotation;
-                                broadcast("/mb Update " + player.Name + " set obj = Rotate(obj, -"+rotation+")");
+                                broadcast("/mb Update " + player.Name + " set obj = Rotate(obj, -"+rotation+")", player);
                             }
-                            else if (ln.StartsWith("/up"))
+                            else if (ln.StartsWith("/u"))
                             {
                                 // Calculate new player x,y
                                 // TODO: Brug czartesianoffset funktionen i stedet for, så er vi sikre på at de flytter samme afstand som vi selv har beregnet
-                                broadcast("/mb Update " + player.Name+" set obj = CartesianOffset(OBJ, "+(player.Angle+90)+", "+move.ToString(CultureInfo.InvariantCulture)+", \"m\")");
+                                broadcast("/mb Update " + player.Name+" set obj = CartesianOffset(OBJ, "+(player.Angle+90)+", "+move.ToString(CultureInfo.InvariantCulture)+", \"m\")", player);
                             }
-                            else if (ln.StartsWith("/down"))
+                            else if (ln.StartsWith("/d"))
                             {
-                                broadcast("/mb Update " + player.Name + " set obj = CartesianOffset(OBJ, " + (player.Angle + 90) + ", " + move.ToString(CultureInfo.InvariantCulture) + ", \"m\")");
+                                broadcast("/mb Update " + player.Name + " set obj = CartesianOffset(OBJ, " + (player.Angle + 90) + ", -" + move.ToString(CultureInfo.InvariantCulture) + ", \"m\")", player);
                             }
-                            else if (ln.StartsWith("/fire"))
+                            else if (ln.StartsWith("/f"))
                             {
                                // not implemented yet
+                            }
+                            else if (ln.StartsWith("/q"))
+                            {
+                                string message = player.Name + " left the game!";
+                                broadcast("/mb close table "+player.Name, player);
+                                broadcast("/mb print \""+message+"\"", player);
+                                Console.WriteLine(message);
                             }
                         }
                         else
                         {
                             if (ln.Length > 0)
                             {
-                                broadcast(line.Trim());
+                                broadcast(line.Trim(), null);
                                 Console.WriteLine(data);
                             }
                         }
@@ -175,13 +185,14 @@ namespace MI_Tanks_Server
             stream.Flush();
         }
 
-        public static void broadcast(string message)
+        public static void broadcast(string message, Player excludeplayer)
         {
             lock (_lock)
             {
                 foreach (Player player in clients.Values)
                 {
-                    SendMessage(player, message);
+                    if (excludeplayer==null || excludeplayer.Id!=player.Id)
+                      SendMessage(player, message);
                 }
             }
         }
@@ -189,5 +200,4 @@ namespace MI_Tanks_Server
 
 
    
-    }
-
+}

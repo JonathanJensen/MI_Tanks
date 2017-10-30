@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.labelAngle = new System.Windows.Forms.Label();
@@ -35,6 +36,7 @@
             this.label5 = new System.Windows.Forms.Label();
             this.labelHP = new System.Windows.Forms.Label();
             this.checkBoxAcceptMB = new System.Windows.Forms.CheckBox();
+            this.tmrKeys = new System.Windows.Forms.Timer(this.components);
             this.SuspendLayout();
             // 
             // label1
@@ -104,6 +106,12 @@
             this.checkBoxAcceptMB.UseVisualStyleBackColor = true;
             this.checkBoxAcceptMB.CheckedChanged += new System.EventHandler(this.checkBoxAcceptMB_CheckedChanged);
             // 
+            // tmrKeys
+            // 
+            this.tmrKeys.Enabled = true;
+            this.tmrKeys.Interval = 250;
+            this.tmrKeys.Tick += new System.EventHandler(this.timer1_Tick);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -137,5 +145,6 @@
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label labelHP;
         private System.Windows.Forms.CheckBox checkBoxAcceptMB;
+        private System.Windows.Forms.Timer tmrKeys;
     }
 }

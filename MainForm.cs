@@ -5,8 +5,11 @@ using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
 using System.Drawing;
+using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Net.Sockets;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -21,14 +24,27 @@ namespace MI_Tanks
         private IMapBasicApplication mapbasicApplication;
         private float tankAngle = 0;
         private string username = null;
-        private int lastUsedID = -1;
         private bool disableMB = false;
+        private int rotation = 15;
+        private double move = 1.0;
+        private bool keyup = false;
+        private bool keydown = false;
+        private bool keyleft = false;
+        private bool keyright = false;
 
         System.Net.Sockets.TcpClient clientSocket = new System.Net.Sockets.TcpClient();
         NetworkStream serverStream = default(NetworkStream);
         string readData = null;
+        private static string dllpath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
         private void SendMessage(string message)
+        {
+            new Thread(delegate () {
+                SendMessageThread(message);
+            }).Start();
+        }
+
+        private void SendMessageThread(string message)
         {
             try
             {
@@ -108,14 +124,19 @@ namespace MI_Tanks
 
                                     RunMBCommand(ln);
                                 }
+                                else if (ln.StartsWith("/c"))
+                                {
+                                    string[] parms = ln.Substring(3).Split(',');
+                                    mapbasicApplication.CallMapBasicSubroutine("SetColor", parms);
+                                }
                                 // These are done seperatly on the client so we can have relative paths from the mbx in the future
                                 else if (ln.StartsWith("/OpnTnkTbl"))
                                 {
-                                    RunMBCommand("Open Table \"C:\\source\\MI_Tanks\\MapInfo_Files\\tank.TAB\"");
+                                    RunMBCommand("Open Table \"" + Path.Combine(dllpath, "data\\tank.TAB") + "\"");
                                 }
                                 else if (ln.StartsWith("/OpnPlrTbl"))
                                 {
-                                    RunMBCommand("Open Table \"C:\\source\\MI_Tanks\\MapInfo_Files\\Players.TAB\"");
+                                    RunMBCommand("Open Table \"" + Path.Combine(dllpath, "data\\Players.TAB") + "\"");
                                 }
                             }
 
@@ -175,24 +196,44 @@ namespace MI_Tanks
             switch (e.KeyCode)
             {
                 case Keys.Left:
-                    System.Diagnostics.Debug.WriteLine("left");
-                    SendMessage("/left");
+                    keyleft = true;
                     break;
                 case Keys.Right:
-                    System.Diagnostics.Debug.WriteLine("right");
-                    SendMessage("/right");
+                    keyright = true;
                     break;
                 case Keys.Up:
-                    System.Diagnostics.Debug.WriteLine("up");
-                    SendMessage("/up");
+                    keyup = true;
                     break;
                 case Keys.Down:
-                    System.Diagnostics.Debug.WriteLine("down");
-                    SendMessage("/down");
+                    keydown = true;
                     break;
-                case Keys.Space:
+                case Keys.ControlKey:
                     System.Diagnostics.Debug.WriteLine("Boom!");
-                    SendMessage("/fire");
+//                    SendMessage("/f");
+                    break;
+            }
+        }
+
+        protected override void OnKeyUp(KeyEventArgs e)
+        {
+            base.OnKeyDown(e);
+            switch (e.KeyCode)
+            {
+                case Keys.Left:
+                    keyleft = false;
+                    break;
+                case Keys.Right:
+                    keyright = false;
+                    break;
+                case Keys.Up:
+                    keyup = false;
+                    break;
+                case Keys.Down:
+                    keydown = false;
+                    break;
+                case Keys.ControlKey:
+//                    System.Diagnostics.Debug.WriteLine("Boom!");
+//                    SendMessage("/f");
                     break;
             }
         }
@@ -202,20 +243,6 @@ namespace MI_Tanks
             byte[] outStream = System.Text.Encoding.ASCII.GetBytes(text);
             serverStream.Write(outStream, 0, outStream.Length);
             serverStream.Flush();
-        }
-
-        private void RotateTank(int id, float angle)
-        {
-            string command = $"Update {username} set obj = Rotate(obj, {angle})";
-            SendMessage("/left");
-            //            tankAngle += angle;
-            //            labelAngle.Text = tankAngle.ToString();
-        }
-
-        private void MoveTank(int id, int speed)
-        {
-            string command = "Update {username} set obj = CartesianOffset(OBJ, {tankAngle+90}, 0.5, \"m\")";
-            SendMessage(command);
         }
 
         private void CreatePlayerTable(string name)
@@ -232,7 +259,7 @@ namespace MI_Tanks
             {
                 clientSocket.Connect("127.0.0.1", 8066);
                 serverStream = clientSocket.GetStream();
-                SendMessage("/name " + username);
+                SendMessage("/n " + username);
                 Thread ctThread = new Thread(getMessage);
                 ctThread.Start();
             }
@@ -251,6 +278,37 @@ namespace MI_Tanks
         {
             SendMessage("/quit");
             mapInfo.RunMapBasicCommand("END MAPINFO");
+        }
+       
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            if (keyleft)
+            {
+                System.Diagnostics.Debug.WriteLine("left");
+                SendMessage("/l");
+                tankAngle += rotation;
+                RunMBCommand("Update " + username + " set obj = Rotate(obj, " + rotation + ")");
+            }
+            if (keyright)
+            {
+                System.Diagnostics.Debug.WriteLine("right");
+                SendMessage("/r");
+                tankAngle -= rotation;
+                RunMBCommand("Update " + username + " set obj = Rotate(obj, -" + rotation + ")");
+            }
+            if (keyup)
+            {
+                System.Diagnostics.Debug.WriteLine("up");
+                SendMessage("/u");
+                RunMBCommand("Update " + username + " set obj = CartesianOffset(OBJ, " + (tankAngle + 90) + ", " + move.ToString(CultureInfo.InvariantCulture) + ", \"m\")");
+            }
+            if (keydown)
+            {
+                System.Diagnostics.Debug.WriteLine("down");
+                SendMessage("/d");
+                RunMBCommand("Update " + username + " set obj = CartesianOffset(OBJ, " + (tankAngle + 90) + ", -" + move.ToString(CultureInfo.InvariantCulture) + ", \"m\")");
+            }
+
         }
     }
 }

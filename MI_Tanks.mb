@@ -3,8 +3,8 @@
 '       All rights reserved.
 '****************************************************************************/
 
-Include "C:\Program Files\MapInfo\MapBasic\Samples\MAPBASIC\INC\mapbasic.def"
-Include "C:\Program Files\MapInfo\MapBasic\Samples\MAPBASIC\INC\IMapInfoPro.def"
+Include "C:\Program Files\MapInfo\MapBasic16\Samples\MAPBASIC\INC\mapbasic.def"
+Include "C:\Program Files\MapInfo\MapBasic16\Samples\MAPBASIC\INC\IMapInfoPro.def"
 
 ' Declare a method from the System.Windows.Forms.dll assembly
 Declare Method Show Class "System.Windows.Forms.MessageBox" Lib "System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" (ByVal str As String, ByVal caption As String) 
@@ -37,6 +37,18 @@ Global mapinfoApplication as This
 Global mbAddIn as This
 Global MessageTitle as string
 
+Declare Function UpdateBGColor(ByVal oTarget as Object, ByVal newBrush as Brush) as Object
+Declare Sub SetColor(ByVal name as string, ByVal color as Integer)
+
+Function UpdateBGColor(ByVal oTarget as Object, ByVal newBrush as Brush) as Object
+       Alter Object oTarget Info OBJ_INFO_BRUSH, newBrush
+       UpdateBGColor = oTarget
+End Function
+
+Sub SetColor(ByVal name as string, ByVal color as Integer)
+  Update name set obj = UpdateBGColor(obj, MakeBrush(2, color, 0))
+End Sub
+
 Sub Main
 	if (SystemInfo(SYS_INFO_MIPLATFORM) = MIPLATFORM_WIN64) And (SystemInfo(SYS_INFO_MAPINFO_INTERFACE) = MIINTERFACE_RIBBON) then
 	else
@@ -47,7 +59,7 @@ Sub Main
 	mapinfoApplication = SYSTEMINFO(SYS_INFO_IMAPINFOAPPLICATION)
 	mbAddIn = New_RibbonCustomizationAddIn()
 	call Initialize(mbAddIn, mapinfoApplication, ApplicationName$() )
-	Run Application "C:\source\MI_Tanks\MapInfo_Files\MI_Tanks.WOR"
+	Run Application "Data\MI_Tanks.WOR"
 End Sub 
 
 Sub WinFocusChangedHandler 
