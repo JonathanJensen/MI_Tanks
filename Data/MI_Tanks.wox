@@ -1,11 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ArrayOfMapInfoDockingParams xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <MapInfoDockingParams Title="BYGNING,Aerial Kort" WindowType="ViewWindow">
+  <MapInfoDockingParams Title="bullet,BYGNING,Aerial Kort" WindowType="ViewWindow">
     <DockingParams>
       <PreviousFloatingWindowRect />
       <FloatWindowState>Normal</FloatWindowState>
       <ZorderInFloatMode>0</ZorderInFloatMode>
-      <TabOrderIndex>2</TabOrderIndex>
+      <TabOrderIndex>1</TabOrderIndex>
       <PreviousContainerDesiredSize>
         <Width>0</Width>
         <Height>0</Height>
@@ -27,13 +27,13 @@
       <CanDock>true</CanDock>
       <CanClose>true</CanClose>
       <IsSelectedTab>false</IsSelectedTab>
-      <IsActiveWindow>false</IsActiveWindow>
+      <IsActiveWindow>true</IsActiveWindow>
       <WindowRect>29,180,969,471</WindowRect>
       <TabGroupName />
       <IsTabGroupOwner>false</IsTabGroupOwner>
       <SideTabOrder>0</SideTabOrder>
-      <IndexInDockMode>4</IndexInDockMode>
-      <IndexInFloatMode>4</IndexInFloatMode>
+      <IndexInDockMode>5</IndexInDockMode>
+      <IndexInFloatMode>5</IndexInFloatMode>
       <TabOrderInDockMode>0</TabOrderInDockMode>
       <TabOrderInFloatMode>0</TabOrderInFloatMode>
       <MDIBounds>0,0,124,50</MDIBounds>

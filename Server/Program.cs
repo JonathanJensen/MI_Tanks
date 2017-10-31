@@ -23,6 +23,11 @@ namespace MI_Tanks_Server
         private static int rotation = 15;
         private static double move = 1.0;
         private static Color[] colors = new Color[] { Color.Red, Color.Magenta, Color.Green, Color.Cyan, Color.Yellow, Color.White, Color.Blue };
+        private static double startx = 556560.0;
+        private static double starty = 6322636.0;
+        private static Random random = new Random();
+        public static List<Bullet> bullets = new List<Bullet>();
+
         static void Main(string[] args)
         {
             int count = 1;
@@ -41,6 +46,12 @@ namespace MI_Tanks_Server
                 t.Start(count);
                 count++;
             }
+        }
+
+        private static double RandomPos(double d)
+        {
+            double shift = random.NextDouble() * 200.0 - 100;
+            return d + shift;
         }
 
         public static void handle_clients(object o)
@@ -75,6 +86,9 @@ namespace MI_Tanks_Server
                             {
                                 player.Name = ln.Substring(3);
                                 player.Id = id;
+                                player.X = RandomPos(startx);
+                                player.Y = RandomPos(starty);
+
                                 Console.WriteLine("Player joined: " + player.Name);
                                 
                                 // TODO: This should be broadcast to all connected clients, as they all need to add the new player.
@@ -83,13 +97,14 @@ namespace MI_Tanks_Server
                                 JoinGame(player);
 
                                 // Then the current player broadcasts themselves to everyone (including themselves)
+                                broadcast("/mb set CoordSys Earth Projection 8, 115, \"m\", 9, 0, 0.9996, 500000, 0", null);
                                 broadcast("/OpnTnkTbl", null); // Open tab file with dummy tank object
                                 broadcast("/OpnPlrTbl", null); // Open table with players
                                 broadcast("/mb Add Map Auto Layer Players Animate", null); // Add players table to map as animated layer
                                 broadcast("/mb Select * from tank into temp_tank", null); // Make copy of dummy tank object
                                 broadcast("/mb update temp_tank set id = "+player.Id, null); // Set player id
                                 broadcast("/mb update temp_tank set playername=\""+player.Name+"\"", null); // Set player name
-                                broadcast("/mb update temp_tank set obj=CartesianOffsetXY(obj, 556560.0, 6322636.0, \"m\")", null); // move from 0,0 into map area
+                                broadcast("/mb update temp_tank set obj=CartesianOffsetXY(obj, "+player.X.ToString(CultureInfo.InvariantCulture)+", "+player.Y.ToString(CultureInfo.InvariantCulture)+", \"m\")", null); // move from 0,0 into map area
                                 broadcast("/mb insert into Players select * from temp_tank", null); // Copy tank into list of players
                                 broadcast("/mb Close Table tank", null);
                                 broadcast("/mb Close Table temp_tank", null);
@@ -112,16 +127,28 @@ namespace MI_Tanks_Server
                             else if (ln.StartsWith("/u"))
                             {
                                 // Calculate new player x,y
-                                // TODO: Brug czartesianoffset funktionen i stedet for, så er vi sikre på at de flytter samme afstand som vi selv har beregnet
                                 broadcast("/mb Update " + player.Name+" set obj = CartesianOffset(OBJ, "+(player.Angle+90)+", "+move.ToString(CultureInfo.InvariantCulture)+", \"m\")", player);
+                                double rad = (player.Angle+90) * Math.PI / 180.0;
+                                player.X += Math.Cos(rad) * move;
+                                player.Y += Math.Sin(rad) * move;
                             }
                             else if (ln.StartsWith("/d"))
                             {
                                 broadcast("/mb Update " + player.Name + " set obj = CartesianOffset(OBJ, " + (player.Angle + 90) + ", -" + move.ToString(CultureInfo.InvariantCulture) + ", \"m\")", player);
+                                double rad = (player.Angle+90) * Math.PI / 180.0;
+                                player.X -= Math.Cos(rad) * move;
+                                player.Y -= Math.Sin(rad) * move;
                             }
                             else if (ln.StartsWith("/f"))
                             {
+                                double rad = (player.Angle+90) * Math.PI / 180.0;
+                                double bx= player.X + Math.Cos(rad) * 3.0; // Position bullet in front of tank
+                                double by =player.Y + Math.Sin(rad) * 3.0;
+                                Bullet bullet = new Bullet(player.Id, bx, by);
+                                bullets.Add(bullet);
+                                broadcast("/mb Insert Into Bullet (BulletId, PlayerId, OBJ) Values("+bullet.Id+", "+player.Id+", CreatePoint("+bullet.X.ToString(CultureInfo.InvariantCulture)+", "+bullet.Y.ToString(CultureInfo.InvariantCulture)+"))", null);
                                // not implemented yet
+                               // add bullet to map and start moving
                             }
                             else if (ln.StartsWith("/q"))
                             {

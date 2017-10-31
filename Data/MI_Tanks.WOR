@@ -3,18 +3,26 @@
 !Charset WindowsLatin1
 Open Table "BYGNING" As BYGNING Interactive
 Open Table "Aerial.TAB" As Aerial Interactive
-Map From BYGNING,Aerial
+Open Table "bullet" As bullet Interactive
+Map From bullet,BYGNING,Aerial
   Position (0.302083,1.875) Units "in"
   Width 9.96875 Units "in" Height 4.5625 Units "in" 
 Set Window FrontWindow() ScrollBars Off Autoscroll On Enhanced On Smooth Text Antialias Image High
 Set Map
   CoordSys Earth Projection 8, 115, "m", 9, 0, 0.9996, 500000, 0
-  Center (556663.3575,6322620.226)
-  Zoom 1.123547376 Units "km"
+  Center (556576.1846,6322634.017)
+  Zoom 0.561773756 Units "km"
   Preserve Zoom Display Position
   Distance Units "km" Area Units "sq km" XY Units "m"
 Set Map
   Layer 1
+    Display Global
+    Global Pen (1,2,0) Brush (2,16777215,16777215) Symbol (34,0,12) Line (1,2,0) Font ("Arial",0,9,0)
+    Label Line Arrow Position Right Font ("Arial",0,9,0) Pen (1,2,0) 
+      With BulletId
+      Parallel On Auto Off Overlap Off Duplicates On Offset 2
+      Visibility On
+  Layer 2
     Display Global
     Global Pen (1,2,0) Brush (2,12632256,16777215) Symbol (35,0,12) Line (1,2,0) Font ("Arial",0,9,0)
     Label Line None Position Center Font ("Arial",0,9,0) Pen (1,2,0) 
@@ -22,7 +30,7 @@ Set Map
       Parallel On Auto Off Overlap Off Duplicates On Offset 2
       Visibility On
    Alpha 127
-  Layer 2
+  Layer 3
     Display Graphic
     Global Pen (1,2,0)  Brush (2,16777215,16777215)  Symbol (35,0,12)  Line (1,2,0)  Font ("Arial",0,9,0)
     Selectable Off
@@ -32,3 +40,7 @@ Set Map
     transparency off 
   color 16777215 
     grayscale off 
+Set Map Layer 1 Editable
+Set Window FrontWindow() Printer
+ Name "CutePDF Writer" Orientation Portrait Copies 1
+ Papersize 9

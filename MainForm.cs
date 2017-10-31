@@ -31,6 +31,7 @@ namespace MI_Tanks
         private bool keydown = false;
         private bool keyleft = false;
         private bool keyright = false;
+        private bool firekey = false;
 
         System.Net.Sockets.TcpClient clientSocket = new System.Net.Sockets.TcpClient();
         NetworkStream serverStream = default(NetworkStream);
@@ -124,7 +125,7 @@ namespace MI_Tanks
 
                                     RunMBCommand(ln);
                                 }
-                                else if (ln.StartsWith("/c"))
+                                else if (ln.StartsWith("/cp"))
                                 {
                                     string[] parms = ln.Substring(3).Split(',');
                                     mapbasicApplication.CallMapBasicSubroutine("SetColor", parms);
@@ -137,6 +138,10 @@ namespace MI_Tanks
                                 else if (ln.StartsWith("/OpnPlrTbl"))
                                 {
                                     RunMBCommand("Open Table \"" + Path.Combine(dllpath, "data\\Players.TAB") + "\"");
+                                }
+                                else if (ln.StartsWith("/OpnBulletTbl"))
+                                {
+                                    RunMBCommand("Open Table \"" + Path.Combine(dllpath, "data\\Bullet.TAB") + "\"");
                                 }
                             }
 
@@ -208,8 +213,7 @@ namespace MI_Tanks
                     keydown = true;
                     break;
                 case Keys.ControlKey:
-                    System.Diagnostics.Debug.WriteLine("Boom!");
-//                    SendMessage("/f");
+                    firekey = true;
                     break;
             }
         }
@@ -232,8 +236,7 @@ namespace MI_Tanks
                     keydown = false;
                     break;
                 case Keys.ControlKey:
-//                    System.Diagnostics.Debug.WriteLine("Boom!");
-//                    SendMessage("/f");
+                    firekey = false;
                     break;
             }
         }
@@ -308,7 +311,12 @@ namespace MI_Tanks
                 SendMessage("/d");
                 RunMBCommand("Update " + username + " set obj = CartesianOffset(OBJ, " + (tankAngle + 90) + ", -" + move.ToString(CultureInfo.InvariantCulture) + ", \"m\")");
             }
-
+            if (firekey)
+            {
+                System.Diagnostics.Debug.WriteLine("fire");
+                SendMessage("/f ");
+                //RunMBCommand("Update " + username + " set obj = CartesianOffset(OBJ, " + (tankAngle + 90) + ", -" + move.ToString(CultureInfo.InvariantCulture) + ", \"m\")");
+            }
         }
     }
 }
