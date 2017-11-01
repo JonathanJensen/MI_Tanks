@@ -3,8 +3,8 @@
 '       All rights reserved.
 '****************************************************************************/
 
-Include "C:\Program Files\MapInfo\MapBasic\Samples\MAPBASIC\INC\mapbasic.def"
-Include "C:\Program Files\MapInfo\MapBasic\Samples\MAPBASIC\INC\IMapInfoPro.def"
+Include "mapbasic.def"
+Include "IMapInfoPro.def"
 
 ' Declare a method from the System.Windows.Forms.dll assembly
 Declare Method Show Class "System.Windows.Forms.MessageBox" Lib "System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" (ByVal str As String, ByVal caption As String) 

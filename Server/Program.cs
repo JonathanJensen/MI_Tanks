@@ -12,6 +12,8 @@ using System.Globalization;
 using System.Diagnostics;
 using MI_Tanks_Server;
 using System.Drawing;
+using System.Threading.Tasks;
+using System.Timers;
 
 namespace MI_Tanks_Server
 {
@@ -22,11 +24,14 @@ namespace MI_Tanks_Server
         private static int nextid = 1;
         private static int rotation = 15;
         private static double move = 1.0;
+        private static double bulletmove = 5.0;
         private static Color[] colors = new Color[] { Color.Red, Color.Magenta, Color.Green, Color.Cyan, Color.Yellow, Color.White, Color.Blue };
         private static double startx = 556560.0;
         private static double starty = 6322636.0;
         private static Random random = new Random();
-        public static List<Bullet> bullets = new List<Bullet>();
+        private static List<Bullet> bullets = new List<Bullet>();
+        private static System.Timers.Timer bullettimer = new System.Timers.Timer(200);
+        private static object _bulletlock = new object();
 
         static void Main(string[] args)
         {
@@ -34,6 +39,10 @@ namespace MI_Tanks_Server
 
             TcpListener ServerSocket = new TcpListener(IPAddress.Any, 8066);
             ServerSocket.Start();
+
+            bullettimer.Elapsed += OnTimedEvent;
+            bullettimer.AutoReset = true;
+            bullettimer.Enabled = true;
 
             while (true)
             {
@@ -48,7 +57,32 @@ namespace MI_Tanks_Server
             }
         }
 
-        private static double RandomPos(double d)
+        private static void OnTimedEvent(Object source, ElapsedEventArgs e)
+        {
+            lock (_bulletlock)
+            {
+                List<Bullet> remove = new List<Bullet>();
+                int bulletcount = bullets.Count;
+                for (int i = 0; i < bulletcount; i++)
+                {
+                    Bullet b = bullets[i];
+                    broadcast("/mb SELECT * FROM bullet WHERE BulletId = " + b.Id + " INTO BulletTemp NoSelect Hide", null);
+                    broadcast("/mb Update BulletTemp set obj = CartesianOffset(OBJ, " + (b.Angle + 90) + ", " + bulletmove.ToString(CultureInfo.InvariantCulture) + ", \"m\")", null);
+                    broadcast("close BulletTemp", null);
+                    b.Counter--;
+                    if (b.Counter < 0)
+                        remove.Add(b);
+                }
+                foreach (Bullet b in remove)
+                {
+                    bullets.Remove(b);
+                    broadcast("/mb SELECT * FROM bullet WHERE BulletId = " + b.Id + " INTO BulletTemp NoSelect Hide", null);
+                    broadcast("/mb Delete from BulletTemp", null);
+                }
+            }
+        }
+
+            private static double RandomPos(double d)
         {
             double shift = random.NextDouble() * 200.0 - 100;
             return d + shift;
@@ -142,10 +176,14 @@ namespace MI_Tanks_Server
                             else if (ln.StartsWith("/f"))
                             {
                                 double rad = (player.Angle+90) * Math.PI / 180.0;
-                                double bx= player.X + Math.Cos(rad) * 3.0; // Position bullet in front of tank
-                                double by =player.Y + Math.Sin(rad) * 3.0;
-                                Bullet bullet = new Bullet(player.Id, bx, by);
-                                bullets.Add(bullet);
+                                double bx= player.X + Math.Cos(rad) * 5.0; // Position bullet in front of tank
+                                double by =player.Y + Math.Sin(rad) * 5.0;
+                                Bullet bullet = new Bullet(player.Id, bx, by, player.Angle);
+                                lock (_bulletlock)
+                                {
+
+                                    bullets.Add(bullet);
+                                }
                                 broadcast("/mb Insert Into Bullet (BulletId, PlayerId, OBJ) Values("+bullet.Id+", "+player.Id+", CreatePoint("+bullet.X.ToString(CultureInfo.InvariantCulture)+", "+bullet.Y.ToString(CultureInfo.InvariantCulture)+"))", null);
                                // not implemented yet
                                // add bullet to map and start moving
