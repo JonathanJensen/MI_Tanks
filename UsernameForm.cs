@@ -44,7 +44,7 @@ namespace MI_Tanks
         {
             if (textBox1.Text.All(Char.IsLetter))
             {
-                MainForm mainForm = new MainForm(mapInfo, mapbasicApplication, textBox1.Text);
+                MainForm mainForm = new MainForm(mapInfo, mapbasicApplication, textBox1.Text, textBoxServerIP.Text);
                 this.Close();
                 mainForm.Show();
             }

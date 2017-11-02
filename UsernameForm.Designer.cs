@@ -31,6 +31,8 @@
             this.button1 = new System.Windows.Forms.Button();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
+            this.textBoxServerIP = new System.Windows.Forms.TextBox();
+            this.label2 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // button1
@@ -61,11 +63,30 @@
             this.label1.TabIndex = 2;
             this.label1.Text = "Username:";
             // 
+            // textBoxServerIP
+            // 
+            this.textBoxServerIP.Location = new System.Drawing.Point(10, 66);
+            this.textBoxServerIP.Name = "textBoxServerIP";
+            this.textBoxServerIP.Size = new System.Drawing.Size(174, 20);
+            this.textBoxServerIP.TabIndex = 3;
+            this.textBoxServerIP.Text = "127.0.0.1";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(12, 47);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(51, 13);
+            this.label2.TabIndex = 4;
+            this.label2.Text = "Server IP";
+            // 
             // UsernameForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(277, 51);
+            this.ClientSize = new System.Drawing.Size(277, 98);
+            this.Controls.Add(this.label2);
+            this.Controls.Add(this.textBoxServerIP);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.textBox1);
             this.Controls.Add(this.button1);
@@ -82,5 +103,7 @@
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.TextBox textBoxServerIP;
+        private System.Windows.Forms.Label label2;
     }
 }

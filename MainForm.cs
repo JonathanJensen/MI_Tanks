@@ -22,6 +22,7 @@ namespace MI_Tanks
     {
         private IMapInfoPro mapInfo;
         private IMapBasicApplication mapbasicApplication;
+        private string serverIP = "";
         private float tankAngle = 0;
         private string username = null;
         private bool disableMB = false;
@@ -57,14 +58,14 @@ namespace MI_Tanks
             catch { }
         }
 
-        public MainForm(IMapInfoPro mapInfo, IMapBasicApplication mbApplication, string username)
+        public MainForm(IMapInfoPro mapInfo, IMapBasicApplication mbApplication, string username, string ip)
         {
             this.mapInfo = mapInfo;
             this.mapbasicApplication = mbApplication;
             this.username = username;
+            serverIP = ip;
             InitializeComponent();
             KeyPreview = true;
-
         }
 
         private void getMessage()
@@ -260,7 +261,7 @@ namespace MI_Tanks
 
             try
             {
-                clientSocket.Connect("127.0.0.1", 8066);
+                clientSocket.Connect(serverIP, 8066);
                 serverStream = clientSocket.GetStream();
                 SendMessage("/n " + username);
                 Thread ctThread = new Thread(getMessage);
