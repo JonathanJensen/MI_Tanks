@@ -101,8 +101,8 @@ namespace MI_Tanks
 			_autoRefresherBtnCtr.HorizontalAlignment = System.Windows.HorizontalAlignment.Left;
 			_autoRefresherBtnCtr.VerticalAlignment = VerticalAlignment.Top;
             string assemblyFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            _autoRefresherBtnCtr.LargeIcon = new Uri(Path.Combine(assemblyFolder, "tank.png"));
-            _autoRefresherBtnCtr.SmallIcon = new Uri(Path.Combine(assemblyFolder, "tank.png"));
+            _autoRefresherBtnCtr.LargeIcon = new Uri(Path.Combine(assemblyFolder, "data\\tank.png"));
+            _autoRefresherBtnCtr.SmallIcon = new Uri(Path.Combine(assemblyFolder, "data\\tank.png"));
             _autoRefresherBtnCtr.KeyTip = "T";
 
 			//Set the tooltip

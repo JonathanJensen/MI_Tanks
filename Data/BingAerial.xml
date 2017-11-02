@@ -1,7 +1,0 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<TileServerInfo Type="QuadKey">
-  <Url>http://ecn.t3.tiles.virtualearth.net/tiles/a{QUADKEY}.jpg?g=392</Url>
-  <MaxLevel>23</MaxLevel>
-  <TileSize Height="256" />
-  <AttributionText Font="Font (&quot;Tahoma&quot;,257,8,16777215,0)">Microsoft Bing © 2011 Microsoft Corporation</AttributionText>
-</TileServerInfo>

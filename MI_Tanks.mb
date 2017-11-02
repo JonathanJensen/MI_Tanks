@@ -40,6 +40,9 @@ Global MessageTitle as string
 Declare Function UpdateBGColor(ByVal oTarget as Object, ByVal newBrush as Brush) as Object
 Declare Sub SetColor(ByVal name as string, ByVal color as Integer)
 
+Declare Function UpdateSymbol(ByVal oTarget as Object, ByVal newSymbol as Symbol) as Object
+Declare Sub SetBulletStyle(ByVal name, ByVal color as Integer)
+
 Function UpdateBGColor(ByVal oTarget as Object, ByVal newBrush as Brush) as Object
        Alter Object oTarget Info OBJ_INFO_BRUSH, newBrush
        UpdateBGColor = oTarget
@@ -47,6 +50,15 @@ End Function
 
 Sub SetColor(ByVal name as string, ByVal color as Integer)
   Update name set obj = UpdateBGColor(obj, MakeBrush(2, color, 0))
+End Sub
+
+Function UpdateSymbol(ByVal oTarget as Object, ByVal newSymbol as Symbol) as Object
+       Alter Object oTarget Info OBJ_INFO_SYMBOL, newSymbol
+       UpdateSymbol = oTarget
+End Function
+
+Sub SetBulletStyle(ByVal name, ByVal color as Integer)
+  Update name set obj = UpdateSymbol(obj, MakeSymbol(2,color, 8))
 End Sub
 
 Sub Main

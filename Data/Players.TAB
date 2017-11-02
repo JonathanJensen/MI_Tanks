@@ -4,10 +4,9 @@
 
 Definition Table
   Type NATIVE Charset "WindowsLatin1"
-  Fields 3
-    ID Integer ;
-    ANGLE Integer ;
-    PLAYERNAME Char (32) ;
+  Fields 2
+    PlayerId Integer ;
+    BulletId Integer ;
 begin_metadata
 "\MapInfo" = ""
 "\MapInfo\TableID" = "d75d5c65-e667-41d9-80a0-78211e423663"

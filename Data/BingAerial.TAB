@@ -1,9 +1,0 @@
-!table
-!version 1050
-!charset WindowsLatin1
-
-Definition Table
-  File "bingaerial.xml"
-  Type "TILESERVER"
-  CoordSys Earth Projection 10, 157, "m", 0 Bounds (-20037508.3428, -20037508.343) (20037508.3428, 20037508.343)
-ReadOnly

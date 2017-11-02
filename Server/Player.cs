@@ -15,6 +15,8 @@ namespace MI_Tanks_Server
         public int Angle;
         public double X;
         public double Y;
+        public int Points;
+
         public Player(TcpClient connection)
         {
             Connection = connection;

@@ -25,7 +25,7 @@ namespace MI_Tanks
         private string serverIP = "";
         private float tankAngle = 0;
         private string username = null;
-        private bool disableMB = false;
+//        private bool disableMB = false;
         private int rotation = 15;
         private double move = 1.0;
         private bool keyup = false;
@@ -33,7 +33,8 @@ namespace MI_Tanks
         private bool keyleft = false;
         private bool keyright = false;
         private bool firekey = false;
-
+        private int dietimer = 6;
+        bool dead = false;
         System.Net.Sockets.TcpClient clientSocket = new System.Net.Sockets.TcpClient();
         NetworkStream serverStream = default(NetworkStream);
         string readData = null;
@@ -86,6 +87,7 @@ namespace MI_Tanks
                         readData = text;
                         Debug.WriteLine(text);
                         msg();
+                        Application.DoEvents();
                     }
                 }
                 catch
@@ -118,8 +120,8 @@ namespace MI_Tanks
                             obj.TimeToShow = 2000;
                             mapInfo.ShowNotification(obj);*/
 
-                            if (!disableMB)
-                            {
+                         /*   if (!disableMB)
+                            {*/
                                 if (ln.StartsWith("/mb "))
                                 {
                                     ln = ln.Replace("/mb ", "");
@@ -128,9 +130,15 @@ namespace MI_Tanks
                                 }
                                 else if (ln.StartsWith("/cp"))
                                 {
-                                    string[] parms = ln.Substring(3).Split(',');
+                                    string[] parms = ln.Substring(4).Split(',');
                                     mapbasicApplication.CallMapBasicSubroutine("SetColor", parms);
                                 }
+                                // Setting the bullet color and to a round circle fails (unable to find table!), we ca fix this later.
+/*                                else if (ln.StartsWith("/cb"))
+                                {
+                                    string[] parms = ln.Substring(4).Split(',');
+                                    mapbasicApplication.CallMapBasicSubroutine("SetBulletStyle", parms);
+                                }*/
                                 // These are done seperatly on the client so we can have relative paths from the mbx in the future
                                 else if (ln.StartsWith("/OpnTnkTbl"))
                                 {
@@ -144,7 +152,13 @@ namespace MI_Tanks
                                 {
                                     RunMBCommand("Open Table \"" + Path.Combine(dllpath, "data\\Bullet.TAB") + "\"");
                                 }
-                            }
+                                else if (ln.StartsWith("/h"))
+                                {
+                                    dead = true;
+                                    tmrCountdown.Enabled = true;
+
+                                }
+                            //}
 
                             /*
                             if (!Application.Current.Dispatcher.CheckAccess())
@@ -256,7 +270,7 @@ namespace MI_Tanks
         private void MainForm_Load(object sender, EventArgs e)
         {
             labelName.Text = username;
-            disableMB = !checkBoxAcceptMB.Checked;
+//            disableMB = !checkBoxAcceptMB.Checked;
             //CreatePlayerTable(username);
 
             try
@@ -275,48 +289,71 @@ namespace MI_Tanks
 
         private void checkBoxAcceptMB_CheckedChanged(object sender, EventArgs e)
         {
-            disableMB = !((CheckBox)sender).Checked;
+//            disableMB = !((CheckBox)sender).Checked;
         }
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            SendMessage("/quit");
-            mapInfo.RunMapBasicCommand("END MAPINFO");
+            try
+            {
+                SendMessage("/q");
+                mapInfo.RunMapBasicCommand("END MAPINFO");
+                clientSocket.Dispose();
+            } catch { }
         }
        
         private void timer1_Tick(object sender, EventArgs e)
         {
-            if (keyleft)
+            if (!dead) // Only check input keys if not dead
             {
-                System.Diagnostics.Debug.WriteLine("left");
-                SendMessage("/l");
-                tankAngle += rotation;
-                RunMBCommand("Update " + username + " set obj = Rotate(obj, " + rotation + ")");
+                if (keyleft)
+                {
+                    System.Diagnostics.Debug.WriteLine("left");
+                    SendMessage("/l");
+                    tankAngle += rotation;
+                    // We update player position localy, to avoid server lag. Server have it's own tank positions to avoid cheating
+                    RunMBCommand("Update " + username + " set obj = Rotate(obj, " + rotation + ")"); 
+                }
+                if (keyright)
+                {
+                    System.Diagnostics.Debug.WriteLine("right");
+                    SendMessage("/r");
+                    tankAngle -= rotation;
+                    RunMBCommand("Update " + username + " set obj = Rotate(obj, -" + rotation + ")");
+                }
+                if (keyup)
+                {
+                    System.Diagnostics.Debug.WriteLine("up");
+                    SendMessage("/u");
+                    RunMBCommand("Update " + username + " set obj = CartesianOffset(OBJ, " + (tankAngle + 90) + ", " + move.ToString(CultureInfo.InvariantCulture) + ", \"m\")");
+                }
+                if (keydown)
+                {
+                    System.Diagnostics.Debug.WriteLine("down");
+                    SendMessage("/d");
+                    RunMBCommand("Update " + username + " set obj = CartesianOffset(OBJ, " + (tankAngle + 90) + ", -" + move.ToString(CultureInfo.InvariantCulture) + ", \"m\")");
+                }
+                if (firekey)
+                {
+                    System.Diagnostics.Debug.WriteLine("fire");
+                    SendMessage("/f ");
+                }
             }
-            if (keyright)
+        }
+
+        private void tmrCountdown_Tick(object sender, EventArgs e)
+        {
+            dietimer--;
+            if (dietimer>0) // Still counting down, update counter label
             {
-                System.Diagnostics.Debug.WriteLine("right");
-                SendMessage("/r");
-                tankAngle -= rotation;
-                RunMBCommand("Update " + username + " set obj = Rotate(obj, -" + rotation + ")");
-            }
-            if (keyup)
+                lblCountdown.Text = dietimer.ToString();
+                lblCountdown.Visible = true;
+            } else // Countdown reached 0, respawn player
             {
-                System.Diagnostics.Debug.WriteLine("up");
-                SendMessage("/u");
-                RunMBCommand("Update " + username + " set obj = CartesianOffset(OBJ, " + (tankAngle + 90) + ", " + move.ToString(CultureInfo.InvariantCulture) + ", \"m\")");
-            }
-            if (keydown)
-            {
-                System.Diagnostics.Debug.WriteLine("down");
-                SendMessage("/d");
-                RunMBCommand("Update " + username + " set obj = CartesianOffset(OBJ, " + (tankAngle + 90) + ", -" + move.ToString(CultureInfo.InvariantCulture) + ", \"m\")");
-            }
-            if (firekey)
-            {
-                System.Diagnostics.Debug.WriteLine("fire");
-                SendMessage("/f ");
-                //RunMBCommand("Update " + username + " set obj = CartesianOffset(OBJ, " + (tankAngle + 90) + ", -" + move.ToString(CultureInfo.InvariantCulture) + ", \"m\")");
+                tmrCountdown.Enabled = false;
+                lblCountdown.Visible = false;
+                dietimer = 6;
+                SendMapBasic("/s"); // Spawn player again
             }
         }
     }
