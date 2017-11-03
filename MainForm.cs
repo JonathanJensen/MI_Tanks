@@ -120,9 +120,12 @@ namespace MI_Tanks
                             obj.TimeToShow = 2000;
                             mapInfo.ShowNotification(obj);*/
 
-                         /*   if (!disableMB)
-                            {*/
-                                if (ln.StartsWith("/mb "))
+                            /*   if (!disableMB)
+                               {*/
+                            if (ln.StartsWith("/a ")) // Recieve initial direction (angle) from server
+                            {
+                                tankAngle = int.Parse(ln.Substring(3));
+                            } else if (ln.StartsWith("/mb "))
                                 {
                                     ln = ln.Replace("/mb ", "");
 
