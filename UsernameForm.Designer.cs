@@ -69,7 +69,7 @@
             this.textBoxServerIP.Name = "textBoxServerIP";
             this.textBoxServerIP.Size = new System.Drawing.Size(174, 20);
             this.textBoxServerIP.TabIndex = 3;
-            this.textBoxServerIP.Text = "127.0.0.1";
+            this.textBoxServerIP.Text = "geograf.com";
             // 
             // label2
             // 
